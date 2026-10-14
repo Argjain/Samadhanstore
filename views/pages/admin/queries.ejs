@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include('../../partials/head') %>
+    <style>
+        /* Admin Layout Fix */
+        body {
+            background-color: #0f0c29 !important; /* Dark Admin Theme */
+            color: #ffffff !important;
+            margin: 0;
+            padding: 0;
+            font-family: 'Cinzel', serif;
+        }
+
+        .admin-wrapper {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        .admin-content {
+            flex: 1;
+            padding: 40px 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        /* Heading Style */
+        .page-header {
+            margin-bottom: 30px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            padding-bottom: 20px;
+        }
+
+        .page-title {
+            color: #d4af37;
+            font-size: 2.5rem;
+            margin: 0;
+        }
+
+        /* Queries Card/Table Style */
+        .query-box {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 20px;
+            transition: 0.3s;
+        }
+
+        .query-box:hover {
+            border-color: rgba(255, 255, 255, 0.3);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .no-data {
+            text-align: center;
+            padding: 100px 20px;
+            color: rgba(255,255,255,0.4);
+            font-size: 1.2rem;
+        }
+        
+        /* Navigation Style matching your screenshot */
+        .admin-nav .btn-nav.active {
+            background: #fff !important;
+            color: #0f0c29 !important;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="admin-wrapper">
+        <!-- Sidebar/Header -->
+        <%- include('../../partials/admin-nav') %>
+
+        <main class="admin-content">
+            <div class="page-header">
+                <h1 class="page-title">Customer Messages</h1>
+                <p style="color: rgba(255,255,255,0.6);">Management Dashboard > Queries</p>
+            </div>
+
+            <div class="queries-container">
+                <% if(queries && queries.length > 0) { %>
+                    <% queries.forEach(q => { %>
+                        <div class="query-box">
+                            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px;">
+                                <div>
+                                    <h3 style="margin: 0; color: #fff;"><%= q.name %></h3>
+                                    <small style="color: #bb86fc;"><%= q.email %> | <%= q.phone %></small>
+                                </div>
+                                <div style="text-align: right; color: rgba(255,255,255,0.5); font-size: 0.8rem;">
+                                    <%= new Date(q.created_at).toLocaleDateString('en-IN') %>
+                                </div>
+                            </div>
+                            <div style="border-top: 1px solid rgba(255,255,255,0.05); padding-top: 15px;">
+                                <strong style="color: #d4af37; display: block; margin-bottom: 5px;">Subject: <%= q.subject %></strong>
+                                <p style="color: rgba(255,255,255,0.8); line-height: 1.6; margin: 0;">
+                                    <%= q.message %>
+                                </p>
+                            </div>
+                            <div style="margin-top: 20px;">
+                                <a href="mailto:<%= q.email %>" style="background: transparent; border: 1px solid #03dac6; color: #03dac6; padding: 8px 20px; border-radius: 5px; text-decoration: none; font-size: 0.8rem; font-weight: bold;">
+                                    REPLY EMAIL
+                                </a>
+                            </div>
+                        </div>
+                    <% }) %>
+                <% } else { %>
+                    <div class="no-data">
+                        <div style="font-size: 4rem; margin-bottom: 20px;">✉️</div>
+                        <p>No queries found in the database.</p>
+                    </div>
+                <% } %>
+            </div>
+        </main>
+    </div>
+
+    <!-- 👉 Yahan bulky footer nahi, sirf scripts include honi chahiye 👈 -->
+    <script src="/js/main.js?v=2e61b06716d2"></script>
+</body>
+</html>

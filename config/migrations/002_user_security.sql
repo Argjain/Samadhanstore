@@ -1,0 +1,4 @@
+CREATE TABLE IF NOT EXISTS user_security (
+  user_id INT NOT NULL PRIMARY KEY,
+  session_version INT UNSIGNED NOT NULL DEFAULT 0
+) ENGINE=InnoDB;

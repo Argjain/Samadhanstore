@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8">
+<!-- Favicon -->
+<link rel="icon" type="image/png" sizes="32x32" href="/images/logo/favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/images/logo/favicon-16.png">
+<link rel="shortcut icon" href="/images/logo/favicon.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/images/logo/apple-touch-icon.png"><meta name="viewport" content="width=device-width,initial-scale=1"><title><%= pageTitle %></title><link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&display=swap" rel="stylesheet"><link rel="stylesheet" href="/css/style.css?v=a4c169302152"></head>
+<body data-loggedin="false"><div class="particles" id="particles"></div><%- include('../partials/navbar') %>
+<div class="page-wrap" style="max-width:480px;padding-top:130px;">
+  <div class="auth-wrap"><div class="auth-card reveal">
+    <div style="text-align:center;margin-bottom:16px;font-size:2.5rem;">🪬</div>
+    <h2><%= mode==='login'?'Welcome Back':'Join Samadhan' %></h2>
+    <p><%= mode==='login'?'Login to your account':'Start your spiritual journey' %></p>
+    <%if(error&&error.length){%><div class="alert alert-error">⚠ <%=error[0]%></div><%}%>
+    <%if(success&&success.length){%><div class="alert alert-success">✓ <%=success[0]%></div><%}%>
+    <%if(mode==='login'){%>
+    <form method="POST" action="/auth/login">
+      <div class="form-group"><label>Email *</label><input type="email" name="email" placeholder="aap@email.com" required></div>
+      <div class="form-group"><label>Password *</label><input type="password" name="password" placeholder="••••••••" required></div>
+      <button type="submit" class="btn-primary" style="width:100%;margin-top:6px;">Login</button>
+    <div style="text-align: right; margin-bottom: 15px;">
+  <a href="/auth/forgot-password" style="color: var(--lavender-light); font-size: 0.85rem;">Forgot Password?</a>
+</div>
+    </form>
+    <div class="auth-switch">Don't have an account? <a href="/auth/register">Register here</a></div>
+    <%}else{%>
+    <form method="POST" action="/auth/register">
+      <div class="form-group"><label>Full Name *</label><input type="text" name="name" placeholder="Your name" required></div>
+      <div class="form-group"><label>Email *</label><input type="email" name="email" placeholder="aap@email.com" required></div>
+      <div class="form-group"><label>Phone *</label><input type="tel" name="phone" placeholder="10 digit number" required pattern="[0-9]{10}" minlength="10" maxlength="10" title="10 digit mobile number"></div>
+      <div class="form-group"><label>Password *</label><input type="password" name="password" placeholder="••••••••" required minlength="8"></div>
+      <div class="form-group"><label>Confirm Password *</label><input type="password" name="confirm_password" placeholder="••••••••" required></div>
+      <button type="submit" class="btn-primary" style="width:100%;margin-top:6px;">Create Account 🎁</button>
+    </form>
+    <div class="auth-switch">Already have an account? <a href="/auth/login">Login here</a></div>
+    <%}%>
+  </div></div>
+</div>
+<%- include('../partials/footer') %></body></html>

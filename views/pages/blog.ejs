@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <%- include('../partials/head') %>
+  <title><%= pageTitle %></title>
+</head>
+<body data-loggedin="<%= currentUser?'true':'false' %>">
+  <div class="particles" id="particles"></div>
+  <%- include('../partials/navbar') %>
+
+  <div class="page-wrap">
+    <div style="text-align:center;margin-bottom:48px;" class="reveal">
+      <div style="font-size:2.5rem;margin-bottom:12px;">📿</div>
+      <h1 style="font-family:'Cinzel',serif;font-size:2.2rem;color:var(--indigo);margin-bottom:10px;">Samadhan Blog</h1>
+      <p style="color:var(--text-muted);font-style:italic;max-width:500px;margin:0 auto;">Crystal knowledge, spiritual tips & bracelet guides</p>
+    </div>
+
+    <% if(!posts || !posts.length) { %>
+      <div class="empty-state">
+        <div class="empty-icon">📝</div>
+        <h3>No posts yet</h3>
+        <p style="color:var(--text-muted);margin:10px 0 24px;">Blog posts coming soon!</p>
+        <a href="/shop" class="btn-primary">Browse Products</a>
+      </div>
+    <% } else { %>
+      <div class="blog-grid">
+        <% posts.forEach(post => { %>
+          <a href="/blog/<%= post.slug %>" class="blog-card reveal">
+            <div class="blog-card-img">
+              <% if(post.image) { %>
+                <img src="<%= imageUrl(post.image,480) %>" alt="<%= post.title %>" loading="lazy">
+              <% } else { %>
+                <div class="blog-card-placeholder">📿</div>
+              <% } %>
+            </div>
+            <div class="blog-card-body">
+              <% if(post.tags) { %>
+                <div class="blog-tags">
+                  <% post.tags.split(',').slice(0,2).forEach(tag => { %>
+                    <span class="blog-tag"><%= tag.trim() %></span>
+                  <% }) %>
+                </div>
+              <% } %>
+              <h2 class="blog-card-title"><%= post.title %></h2>
+              <p class="blog-card-excerpt"><%= post.excerpt || '' %></p>
+              <div class="blog-card-meta">
+                <span><%= new Date(post.created_at).toLocaleDateString('en-IN', {day:'numeric',month:'short',year:'numeric'}) %></span>
+                <span>by <%= post.author || 'Samadhan' %></span>
+              </div>
+            </div>
+          </a>
+        <% }) %>
+      </div>
+    <% } %>
+  </div>
+
+  <%- include('../partials/footer') %>
+</body>
+</html>

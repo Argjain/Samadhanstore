@@ -1,0 +1,60 @@
+<footer>
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <div class="footer-logo">
+        <img src="/images/logo/logo-sm.png" alt="Samadhan" onerror="this.style.display='none'" width="80" height="40" loading="lazy" style="height:40px;">
+        <span class="footer-logo-text">SAMADHAN</span>
+      </div>
+      <p><%= S.about_text || 'Authentic spiritual bracelets handcrafted with genuine gemstones.' %></p>
+      <div class="social-links">
+<% if(safeLink(S.site_instagram)) { %>
+        <a href="<%= safeLink(S.site_instagram) %>" target="_blank" rel="noopener noreferrer" class="social-btn" title="Instagram">
+          <svg viewBox="0 0 24 24" fill="currentColor" width="16"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919z"/></svg>
+        </a>
+<% } %>
+<% if(safeLink(S.site_facebook)) { %>
+        <a href="<%= safeLink(S.site_facebook) %>" target="_blank" rel="noopener noreferrer" class="social-btn" title="Facebook">
+          <svg viewBox="0 0 24 24" fill="currentColor" width="16"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+        </a>
+<% } %>
+        <a href="<%= whatsapp(S.site_whatsapp||'918630437326') %>" target="_blank" rel="noopener noreferrer" class="social-btn" title="WhatsApp">
+          <svg viewBox="0 0 24 24" fill="currentColor" width="16"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413zM12 0C5.373 0 0 5.373 0 12c0 2.127.558 4.126 1.526 5.858L0 24l6.335-1.503C8.04 23.47 9.975 24 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0z"/></svg>
+        </a>
+      </div>
+    </div>
+    <div class="footer-links">
+      <h4>Quick Links</h4>
+      <ul>
+        <li><a href="/">Home</a></li>
+        <li><a href="/shop">Shop All</a></li>
+        <li><a href="/quiz">Find My Bracelet</a></li>
+        <li><a href="/about">About Us</a></li>
+        <li><a href="/contact">Contact</a></li>
+      </ul>
+    </div>
+    <div class="footer-links">
+      <h4>Categories</h4>
+      <ul>
+        <% if(categories) categories.forEach(c => { %>
+          <li><a href="/shop?category=<%= c.slug %>"><%= c.icon %> <%= c.name %></a></li>
+        <% }) %>
+      </ul>
+    </div>
+    <div class="footer-links">
+      <h4>Contact</h4>
+      <ul>
+        <li>📧 <a href="mailto:<%= S.site_email||'support@samadhanstore.com' %>"><%= S.site_email||'support@samadhanstore.com' %></a></li>
+        <li>📞 <a href="tel:<%= S.site_phone||'+91 8630437326' %>"><%= S.site_phone||'+91 8630437326' %></a></li>
+        <li>🚚 Free shipping ₹<%= S.free_shipping||999 %>+</li>
+        <li>↩️ <%= S.return_policy||'7 day returns' %></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>© <%= new Date().getFullYear() %> Samadhan | All Rights Reserved &nbsp;|&nbsp; <a href="/privacy">Privacy Policy</a> &nbsp;|&nbsp; <a href="/terms">Terms & Conditions</a> &nbsp;|&nbsp; <a href="/returns">Returns</a> &nbsp;|&nbsp; <a href="/shipping">Shipping</a></p>
+    <div class="payment-icons"><span>💳 Razorpay</span><span>🏦 UPI</span><span>💵 COD (Select Pincodes)</span></div>
+  </div>
+</footer>
+<div class="toast" id="toast"></div>
+<script src="/js/main.js?v=2e61b06716d2"></script>
+<% if(!currentUser) { %><script src="/js/popup.js"></script><% } %>

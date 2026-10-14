@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8">
+<!-- Favicon -->
+<link rel="icon" type="image/png" sizes="32x32" href="/images/logo/favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/images/logo/favicon-16.png">
+<link rel="shortcut icon" href="/images/logo/favicon.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/images/logo/apple-touch-icon.png"><meta name="viewport" content="width=device-width,initial-scale=1"><title><%= pageTitle %></title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Cormorant+Garamond:wght@300;400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/style.css?v=a4c169302152"></head>
+<body class="admin-body"><%- include('../../partials/admin-nav') %>
+<div class="admin-wrap">
+  <h2 style="font-family:'Cinzel',serif;color:var(--lavender-light);margin-bottom:18px;">All Users (<%= users.length %>)</h2>
+  <div style="overflow-x:auto;">
+  <table class="admin-table">
+    <thead><tr><th>ID</th><th>Name</th><th>Email</th><th>Phone</th><th>Role</th><th>Joined</th></tr></thead>
+    <tbody>
+      <% users.forEach(u=>{ %>
+      <tr>
+        <td style="color:var(--text-muted)"><%= u.id %></td>
+        <td style="font-weight:600"><%= u.name %></td>
+        <td style="color:var(--text-muted)"><%= u.email %></td>
+        <td style="color:var(--text-muted)"><%= u.phone||'—' %></td>
+        <td><span style="font-family:'Cinzel',serif;font-size:.65rem;padding:3px 10px;border-radius:12px;<%= u.role==='admin'?'background:rgba(139,127,212,.15);color:var(--lavender-light);border:1px solid var(--border)':'background:rgba(76,175,125,.1);color:#4caf7d;border:1px solid rgba(76,175,125,.3)' %>"><%= u.role %></span></td>
+        <td style="color:var(--text-muted);font-size:.85rem;"><%= new Date(u.created_at).toLocaleDateString('en-IN') %></td>
+      </tr>
+      <% }) %>
+    </tbody>
+  </table>
+  </div>
+</div>
+<script src="/js/main.js?v=2e61b06716d2"></script></body></html>

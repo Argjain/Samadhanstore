@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8">
+<!-- Favicon -->
+<link rel="icon" type="image/png" sizes="32x32" href="/images/logo/favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/images/logo/favicon-16.png">
+<link rel="shortcut icon" href="/images/logo/favicon.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/images/logo/apple-touch-icon.png"><meta name="viewport" content="width=device-width,initial-scale=1"><title><%= pageTitle %></title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Cormorant+Garamond:wght@300;400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/style.css?v=a4c169302152"></head>
+<body class="admin-body"><%- include('../../partials/admin-nav') %>
+<div class="admin-wrap">
+  <%if(success&&success.length){%><div class="alert alert-success">✓ <%=success[0]%></div><%}%>
+  <h2 style="font-family:'Cinzel',serif;color:var(--lavender-light);margin-bottom:18px;">Customer Reviews</h2>
+  <% if(!reviews.length){%><div class="empty-state"><div class="empty-icon">⭐</div><h3>Koi review nahi</h3></div><%}%>
+  <div style="overflow-x:auto;">
+  <table class="admin-table">
+    <thead><tr><th>Product</th><th>Customer</th><th>Rating</th><th>Review</th><th>Date</th><th>Status</th><th>Actions</th></tr></thead>
+    <tbody>
+      <% reviews.forEach(r=>{ %>
+      <tr>
+        <td style="color:var(--lavender-light);font-size:.85rem;max-width:120px;"><%= r.product_name||'—' %></td>
+        <td><div style="font-weight:600;font-size:.88rem;"><%= r.name %></div><div style="color:var(--text-muted);font-size:.76rem;"><%= r.email||'' %></div></td>
+        <td style="color:var(--warning);"><%= '★'.repeat(stars(r.rating)) %><% if(!Number.isInteger(Number(r.rating)) || r.rating<1 || r.rating>5) { %> (invalid rating — delete this review)<% } %></td>
+        <td style="font-size:.85rem;max-width:200px;color:var(--text-muted);">
+          <% if(r.title){%><div style="color:var(--text);font-weight:600;margin-bottom:4px;">"<%= r.title %>"</div><%}%>
+          <%= r.review.substring(0,80) %><%= r.review.length>80?'...':'' %>
+        </td>
+        <td style="color:var(--text-muted);font-size:.78rem;white-space:nowrap;"><%= new Date(r.created_at).toLocaleDateString('en-IN') %></td>
+        <td>
+          <% if(r.is_approved){ %>
+            <span style="color:var(--success);font-size:.78rem;">✅ Approved</span>
+          <% } else { %>
+            <span style="color:var(--warning);font-size:.78rem;">⏳ Pending</span>
+          <% } %>
+        </td>
+        <td>
+          <div style="display:flex;gap:6px;flex-wrap:wrap;">
+            <% if(!r.is_approved){ %>
+            <form method="POST" action="/admin/reviews/<%= r.id %>/approve">
+              <button type="submit" class="btn-outline btn-sm" style="color:var(--success);border-color:var(--success);">Approve</button>
+            </form>
+            <% } %>
+            <form method="POST" action="/admin/reviews/<%= r.id %>?_method=DELETE" onsubmit="return confirm('Delete?')">
+              <button type="submit" class="btn-danger btn-sm">Delete</button>
+            </form>
+          </div>
+        </td>
+      </tr>
+      <% }) %>
+    </tbody>
+  </table>
+  </div>
+</div>
+<script src="/js/main.js?v=2e61b06716d2"></script></body></html>

@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/logo/favicon-32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/logo/favicon-16.png">
+  <link rel="shortcut icon" href="/images/logo/favicon.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/logo/apple-touch-icon.png">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title><%= pageTitle %></title>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css?v=a4c169302152">
+</head>
+<body data-loggedin="false">
+  <div class="particles" id="particles"></div>
+  <%- include('../partials/navbar') %>
+
+  <div class="page-wrap" style="max-width: 850px; margin: 0 auto; padding-top: 130px; padding-bottom: 60px; color: var(--text);">
+    <h1 style="font-family: 'Cinzel', serif; color: var(--lavender-light); text-align: center; margin-bottom: 40px;">Shipping & Cancellation Policy</h1>
+    
+    <div style="background: rgba(255,255,255,0.02); border: 1px solid var(--border); padding: 40px; border-radius: 12px; line-height: 1.8; font-size: 0.95rem;">
+      
+      <h3 style="color: var(--silver); margin-bottom: 15px; font-family: 'Cinzel', serif;">1. Shipping & Delivery Policy</h3>
+      <p style="color: var(--text-muted); margin-bottom: 10px;">We strive to deliver your authentic spiritual products as quickly and safely as possible.</p>
+      <ul style="margin-left: 20px; color: var(--text-muted); margin-bottom: 20px;">
+        <li><strong>Processing Time:</strong> All orders are processed and dispatched within <strong>1 to 2 business days</strong> (excluding weekends and holidays) after receiving your order confirmation email.</li>
+        <li><strong>Delivery Time:</strong> Once dispatched, standard delivery takes <strong>3 to 7 business days</strong> depending on your location within India.</li>
+        <li><strong>Shipping Charges:</strong> Shipping charges for your order will be calculated and displayed at checkout.</li>
+        <li><strong>Order Tracking:</strong> You will receive a shipment confirmation email or SMS with tracking numbers once your order has shipped.</li>
+      </ul>
+
+      <h3 style="color: var(--silver); margin-top: 30px; margin-bottom: 15px; font-family: 'Cinzel', serif;">2. Cancellation Policy</h3>
+      <p style="color: var(--text-muted); margin-bottom: 10px;">We process orders quickly to ensure fast delivery. Therefore, we have a strict cancellation window:</p>
+      <ul style="margin-left: 20px; color: var(--text-muted); margin-bottom: 20px;">
+        <li><strong>Before Dispatch:</strong> You can cancel your order within <strong>12 hours</strong> of placing it, provided it has not been dispatched yet. To cancel, please email us immediately at support@samadhanstore.com with your Order ID.</li>
+        <li><strong>After Dispatch:</strong> Once an order has been handed over to our courier partner and dispatched, it <strong>cannot be cancelled</strong>.</li>
+        <li><strong>Refund for Cancellations:</strong> For prepaid orders cancelled successfully before dispatch, the full amount will be refunded to your original payment method within <strong>5-7 business days</strong>.</li>
+      </ul>
+
+      <h3 style="color: var(--silver); margin-top: 30px; margin-bottom: 15px; font-family: 'Cinzel', serif;">3. Contact Us</h3>
+      <p style="color: var(--text-muted); margin-bottom: 10px;">For any questions regarding your shipment or cancellation, please contact us:</p>
+      <p style="color: var(--lavender-light);">
+        <strong>Email:</strong> support@samadhanstore.com<br>
+        <strong>Phone:</strong> +91-8860811457
+      </p>
+    </div>
+  </div>
+
+  <%- include('../partials/footer') %>
+</body>
+</html>

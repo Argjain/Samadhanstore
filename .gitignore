@@ -1,0 +1,11 @@
+.env
+.env.*
+node_modules/
+uploads/
+tests/tmp-uploads/
+*.log
+*.zip
+*.gz
+*.tar
+*.bak
+*.pem

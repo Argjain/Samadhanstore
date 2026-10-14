@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/logo/favicon-32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/logo/favicon-16.png">
+  <link rel="shortcut icon" href="/images/logo/favicon.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/logo/apple-touch-icon.png">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>
+    <%= pageTitle %> – Admin
+  </title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Cormorant+Garamond:wght@300;400&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css?v=a4c169302152">
+</head>
+
+<body class="admin-body"><%- include('../../partials/admin-nav') %>
+    <div class="admin-wrap">
+      <%if(success&&success.length){%>
+        <div class="alert alert-success">✓ <%=success[0]%>
+        </div>
+        <%}%>
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div class="stat-icon">📦</div>
+              <div class="stat-label">Total Orders</div>
+              <div class="stat-value">
+                <%= orderStats.total||0 %>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon">💰</div>
+              <div class="stat-label">Revenue</div>
+              <div class="stat-value" style="font-size:1.1rem;">
+                <%= business.currencySymbol %>
+                  <%= Number(orderStats.revenue||0).toLocaleString('en-IN') %>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon">📅</div>
+              <div class="stat-label">Today</div>
+              <div class="stat-value">
+                <%= orderStats.today||0 %>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon">⏳</div>
+              <div class="stat-label">Pending</div>
+              <div class="stat-value">
+                <%= orderStats.pending||0 %>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon">🚚</div>
+              <div class="stat-label">Shipped</div>
+              <div class="stat-value">
+                <%= orderStats.shipped||0 %>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon">💎</div>
+              <div class="stat-label">Products</div>
+              <div class="stat-value">
+                <%= productStats.total||0 %>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon">⚠️</div>
+              <div class="stat-label">Low Stock</div>
+              <div class="stat-value"
+                style="color:<%= (productStats.low_stock||0)>0?'var(--error)':'var(--success)' %>">
+                <%= productStats.low_stock||0 %>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon">👥</div>
+              <div class="stat-label">Users</div>
+              <div class="stat-value">
+                <%= userStats.total||0 %>
+              </div>
+            </div>
+          </div>
+          <div style="display:flex;gap:10px;margin-bottom:28px;flex-wrap:wrap;">
+            <a href="/admin/products/new" class="btn-primary btn-sm">+ Add Product</a>
+            <a href="/admin/orders" class="btn-outline btn-sm">All Orders</a>
+            <a href="/admin/coupons" class="btn-outline btn-sm">Coupons</a>
+            <a href="/admin/banners" class="btn-outline btn-sm">Banners</a>
+            <a href="/admin/offers" class="btn-outline btn-sm">Festival Offers</a>
+            <a href="/admin/settings" class="btn-outline btn-sm">⚙ Settings</a>
+          </div>
+          <div class="admin-section-head">Recent Orders</div>
+          <div style="overflow-x:auto;">
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th>Order ID</th>
+                  <th>Customer</th>
+                  <th>Phone</th>
+                  <th>Items</th>
+                  <th>Total</th>
+                  <th>Payment</th>
+                  <th>Status</th>
+                  <th>Date</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% recentOrders.forEach(o=>{const
+                  sc={placed:'#e8b84b',confirmed:'#4a90e2',processing:'#8b7fd4',shipped:'#9b59b6',out_for_delivery:'#e8a84b',delivered:'#4caf7d',cancelled:'#e05252'}[o.order_status]||'#9a8460';%>
+                  <tr>
+                    <td style="font-family:'Cinzel',serif;font-size:.78rem;color:var(--lavender-light);">
+                      <%= o.order_id %>
+                    </td>
+                    <td>
+                      <div style="font-weight:600;">
+                        <%= o.name %>
+                      </div>
+                      <div style="color:var(--text-muted);font-size:.78rem;">
+                        <%= o.email %>
+                      </div>
+                    </td>
+                    <td style="color:var(--text-muted);font-size:.85rem;">
+                      <%= o.phone %>
+                    </td>
+                    <td style="font-size:.82rem;">
+                      <% o.items.slice(0,2).forEach(i=>{%><div>
+                          <%= i.name %> ×<%= i.qty %>
+                        </div>
+                        <%})%>
+                    </td>
+                    <td style="font-family:'Cinzel',serif;color:var(--lavender-light);">
+                      <%= business.currencySymbol %>
+                        <%= Number(o.total).toLocaleString('en-IN') %>
+                    </td>
+                    <td>
+                      <%- o.payment_status==='paid' ?'<span style="color:#4caf7d">✅ Paid</span>':'<span style="color:var(--text-muted)">COD</span>' %>
+                    </td>
+                    <td><span class="badge-status"
+                        style="background:<%= sc %>22;color:<%= sc %>;border:1px solid <%= sc %>44;">
+                        <%= o.order_status.replace(/_/g,' ') %></span></td>
+                    <td style="color:var(--text-muted);font-size:.78rem;">
+                      <%= new Date(o.created_at).toLocaleDateString('en-IN') %>
+                    </td>
+                    <td>
+                      <form method="POST" action="/admin/orders/<%= o.order_id %>/status" style="display:flex;gap:5px;">
+                        <select name="status"
+                          style="width:100px;padding:4px;font-size:.76rem;background:rgba(255,255,255,.05);border:1px solid var(--border);color:var(--text);border-radius:4px;">
+                          <%
+                            ['placed','confirmed','processing','shipped','out_for_delivery','delivered','cancelled'].forEach(s=>
+                            {%><option value="<%= s %>" <%=o.order_status===s?'selected':''%>><%= s.replace(/_/g,' ') %></option><%})%>
+            </select>
+            <button type="submit" class="btn-primary btn-sm">Save</button>
+          </form>
+        </td>
+      </tr>
+      <% }) %>
+    </tbody>
+  </table>
+  </div>
+  <a href="/admin/orders" style="color:var(--lavender);font-size:.82rem;display:block;margin-top:12px;">View all orders →</a>
+</div>
+<script src="/js/main.js?v=2e61b06716d2"></script></body></html>

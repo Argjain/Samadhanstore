@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8">
+<!-- Favicon -->
+<link rel="icon" type="image/png" sizes="32x32" href="/images/logo/favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/images/logo/favicon-16.png">
+<link rel="shortcut icon" href="/images/logo/favicon.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/images/logo/apple-touch-icon.png"><meta name="viewport" content="width=device-width,initial-scale=1"><title><%= pageTitle %></title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Cormorant+Garamond:wght@300;400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/style.css?v=a4c169302152"></head>
+<body class="admin-body"><%- include('../../partials/admin-nav') %>
+<div class="admin-wrap" style="max-width:900px;">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;">
+    <h2 style="font-family:'Cinzel',serif;color:var(--lavender-light);"><%= pageTitle %></h2>
+    <a href="/admin/products" class="btn-outline btn-sm">← Back</a>
+  </div>
+  <%if(success&&success.length){%><div class="alert alert-success">✓ <%=success[0]%></div><%}%>
+  <%if(error&&error.length){%><div class="alert alert-error">⚠ <%=error[0]%></div><%}%>
+
+  <form method="POST" action="<%= product?'/admin/products/'+product.id+'?_method=PUT':'/admin/products' %>" enctype="multipart/form-data">
+    <% if(product){%><input type="hidden" name="_method" value="PUT"><%}%>
+
+    <div class="form-section">
+      <h3>Basic Info</h3>
+      <div class="form-row">
+        <div class="form-group"><label>Product Name *</label><input type="text" name="name" required value="<%= product?product.name:'' %>" placeholder="e.g. Black Obsidian Bracelet"></div>
+        <div class="form-group"><label>Category *</label>
+          <select name="category_id" multiple size="4" style="height:auto;" required>
+            <% const selectedCategories = product && product.category_id ? String(product.category_id).split(',') : []; %>
+            <% categories.forEach(c=>{%>
+              <option value="<%= c.id %>" <%= selectedCategories.includes(String(c.id)) ? 'selected' : '' %>><%= c.icon %> <%= c.name %></option>
+            <%})%>
+          </select>
+          <small style="color:var(--text-muted);font-size:.72rem;display:block;margin-top:4px;">Ctrl/Cmd hold karke multiple select karo</small>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Purpose (e.g. Protection, Love)</label><input type="text" name="purpose" value="<%= product?product.purpose||'':'' %>" placeholder="Protection"></div>
+        <div class="form-group"><label>Material (e.g. Crystal, Metal)</label><input type="text" name="material" value="<%= product?product.material||'':'' %>" placeholder="Natural Stone"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Selling Price (₹) *</label><input type="number" name="price" required value="<%= product?product.price:'' %>" min="1"></div>
+        <div class="form-group"><label>Original Price (₹) — for strikethrough</label><input type="number" name="original_price" value="<%= product?product.original_price||'':'' %>"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Stock *</label><input type="number" name="stock" value="<%= product?product.stock:100 %>" min="0"></div>
+        <div class="form-group"><label>Badge (e.g. Best Seller, New)</label><input type="text" name="badge" value="<%= product?product.badge||'':'' %>" placeholder="Best Seller"></div>
+      </div>
+      <div class="form-group">
+        <div style="display:flex;align-items:center;gap:10px;">
+          <input type="checkbox" name="is_featured" id="feat" value="on" <%= product&&product.is_featured?'checked':'' %>>
+          <label for="feat" style="font-size:1rem;text-transform:none;letter-spacing:0;color:var(--text);cursor:pointer;">Show on Homepage (Featured)</label>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <h3>Astrology Associations</h3>
+      <p style="color:var(--text-muted);font-size:.82rem;margin-bottom:14px;">Select multiple values by holding Ctrl (Windows) or Cmd (Mac).</p>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Planet</label>
+          <select name="planet" multiple size="5" style="height:auto;">
+            <% const planets = ['sun','moon','mars','mercury','jupiter','venus','saturn','rahu','ketu'];
+               const selectedPlanets = product && product.planet ? product.planet.split(',') : [];
+               planets.forEach(p => { %>
+                 <option value="<%= p %>" <%= selectedPlanets.includes(p) ? 'selected' : '' %>><%= p.charAt(0).toUpperCase() + p.slice(1) %></option>
+            <% }) %>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Mulank</label>
+          <select name="mulank" multiple size="5" style="height:auto;">
+            <% const mulanks = ['1','2','3','4','5','6','7','8','9'];
+               const selectedMulanks = product && product.mulank ? product.mulank.split(',') : [];
+               mulanks.forEach(m => { %>
+                 <option value="<%= m %>" <%= selectedMulanks.includes(m) ? 'selected' : '' %>><%= m %></option>
+            <% }) %>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Zodiac</label>
+          <select name="zodiac" multiple size="5" style="height:auto;">
+            <% const zodiacs = ['aries','taurus','gemini','cancer','leo','virgo','libra','scorpio','sagittarius','capricorn','aquarius','pisces'];
+               const selectedZodiacs = product && product.zodiac ? product.zodiac.split(',') : [];
+               zodiacs.forEach(z => { %>
+                 <option value="<%= z %>" <%= selectedZodiacs.includes(z) ? 'selected' : '' %>><%= z.charAt(0).toUpperCase() + z.slice(1) %></option>
+            <% }) %>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <h3>Product Images (upload up to 5 images)</h3>
+      <% if(product && product.images && product.images.length) { %>
+      <div style="display:flex;gap:10px;flex-wrap:nowrap;overflow-x:auto;padding-bottom:6px;margin-bottom:14px;">
+        <% product.images.forEach((img,i) => { %>
+        <div class="existing-img-item" style="position:relative;">
+          <img src="<%= img %>" style="width:80px;height:80px;object-fit:cover;border-radius:6px;border:1px solid var(--border);" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'80\' height=\'80\'><rect width=\'80\' height=\'80\' fill=\'%23fdd\'/><text x=\'50%\' y=\'50%\' font-size=\'12\' text-anchor=\'middle\' fill=\'%23a00\'>Broken</text></svg>'; this.style.border='1px solid red';">
+          <input type="hidden" name="existing_images" value="<%= img %>">
+          <button type="button" class="existing-img-remove" aria-label="Remove image"
+            style="position:absolute;top:-8px;right:-8px;z-index:5;width:22px;height:22px;border-radius:50%;border:1px solid var(--border);background:#fff;color:#111;display:flex;align-items:center;justify-content:center;font-weight:700;line-height:1;cursor:pointer;box-shadow:0 2px 10px rgba(0,0,0,0.12);">✕</button>
+        </div>
+        <% }) %>
+      </div>
+      <p style="color:var(--text-muted);font-size:.82rem;margin-bottom:10px;">Existing images. Upload below to add new images.</p>
+      <% } %>
+      <div class="form-group">
+        <label>Upload New Images (JPG/PNG/WebP, max 5MB each)</label>
+        <input type="file" name="images" multiple accept="image/*" style="background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;width:100%;">
+      </div>
+    </div>
+
+    <div class="form-section">
+      <h3>Description & Benefits</h3>
+      <div class="form-group"><label>Description *</label><textarea name="description" rows="4" placeholder="Full product description..."><%= product?product.description||'':'' %></textarea></div>
+      <div class="form-group"><label>Stone Benefits (Separate with |)</label><input type="text" name="stone_benefits" value="<%= product?product.stone_benefits||'':'' %>" placeholder="Benefit 1 | Benefit 2 | Benefit 3"></div>
+    </div>
+
+    <div class="form-section">
+      <h3>Combo Pricing (Optional)</h3>
+      <p style="color:var(--text-muted);font-size:.82rem;margin-bottom:14px;">Set a special price when customers buy multiple units of this product.</p>
+      <div class="form-row">
+        <div class="form-group"><label>Min Quantity for Combo</label><input type="number" name="combo_qty" value="<%= product?product.combo_qty||'':'' %>" min="2" placeholder="e.g. 2"></div>
+        <div class="form-group"><label>Combo Price per Unit (₹)</label><input type="number" name="combo_price" value="<%= product?product.combo_price||'':'' %>" min="1" placeholder="e.g. 449"></div>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <h3>SEO Settings</h3>
+      <div class="form-group"><label>SEO Title</label><input type="text" name="seo_title" value="<%= product?product.seo_title||'':'' %>" placeholder="Product SEO Title"></div>
+      <div class="form-group"><label>SEO Description</label><textarea name="seo_desc" rows="2" placeholder="Short SEO description..."><%= product?product.seo_desc||'':'' %></textarea></div>
+    </div>
+
+    <div style="display:flex;gap:12px;">
+      <button type="submit" class="btn-primary"><%= product?'Update Product':'Add Product' %></button>
+      <a href="/admin/products" class="btn-outline">Cancel</a>
+    </div>
+  </form>
+</div>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('.existing-img-remove').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const wrap = btn.closest('.existing-img-item');
+      if (wrap) wrap.remove(); // removes both thumbnail + its hidden input
+    });
+  });
+});
+</script>
+<script src="/js/main.js?v=2e61b06716d2"></script>
+</body></html>

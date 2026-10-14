@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8">
+<!-- Favicon -->
+<link rel="icon" type="image/png" sizes="32x32" href="/images/logo/favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/images/logo/favicon-16.png">
+<link rel="shortcut icon" href="/images/logo/favicon.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/images/logo/apple-touch-icon.png"><meta name="viewport" content="width=device-width,initial-scale=1"><title><%= pageTitle %></title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/style.css?v=a4c169302152"></head>
+<body data-loggedin="<%= currentUser?'true':'false' %>"><div class="particles" id="particles"></div><%- include('../partials/navbar') %>
+<div class="page-wrap">
+  <div style="text-align:center;padding:40px 0 60px;" class="reveal">
+    <div style="font-size:3rem;margin-bottom:16px;">🪷</div>
+    <h1 style="font-family:'Cinzel',serif;font-size:clamp(2rem,5vw,3rem);color:var(--silver);margin-bottom:14px;">About Samadhan</h1>
+    <p style="color:var(--text-muted);font-style:italic;font-size:1.15rem;max-width:580px;margin:0 auto;">"Samadhan" — peace, resolution, fulfilment. Every bracelet is a prayer.</p>
+  </div>
+  <div style="max-width:700px;margin:0 auto 60px;text-align:center;" class="reveal">
+    <p style="color:var(--text-muted);line-height:1.9;font-size:1.05rem;"><%= S&&S.about_text||'Samadhan was born from a simple belief — that nature holds the answer to every problem. Our mission is to bring authentic, spiritually charged gemstone bracelets to people who seek positive transformation in their lives.' %></p>
+  </div>
+  <div class="section-title reveal"><h2>Our Values</h2></div>
+  <div class="values-grid">
+    <div class="value-card reveal"><div class="value-icon">💎</div><h3>Authenticity</h3><p>Only genuine, certified gemstones. No plastic, no duplicates.</p></div>
+    <div class="value-card reveal" style="transition-delay:.1s"><div class="value-icon">🙏</div><h3>Spirituality</h3><p>Every stone is purified and energized through Vedic rituals.</p></div>
+    <div class="value-card reveal" style="transition-delay:.2s"><div class="value-icon">🌿</div><h3>Sustainability</h3><p>Ethically sourced stones, eco-friendly packaging.</p></div>
+    <div class="value-card reveal" style="transition-delay:.3s"><div class="value-icon">❤️</div><h3>Community</h3><p>2% of every sale goes towards supporting local artisans.</p></div>
+  </div>
+  <div style="text-align:center;margin-top:60px;" class="reveal"><a href="/shop" class="btn-primary">Shop Our Collection →</a></div>
+</div>
+<%- include('../partials/footer') %></body></html>

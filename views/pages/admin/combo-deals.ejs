@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8">
+<!-- Favicon -->
+<link rel="icon" type="image/png" sizes="32x32" href="/images/logo/favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/images/logo/favicon-16.png">
+<link rel="shortcut icon" href="/images/logo/favicon.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/images/logo/apple-touch-icon.png"><meta name="viewport" content="width=device-width,initial-scale=1"><title><%= pageTitle %></title>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/style.css?v=a4c169302152"></head>
+<body class="admin-body"><%- include('../../partials/admin-nav') %>
+<div class="admin-wrap">
+  <%if(success&&success.length){%><div class="alert alert-success">✓ <%=success[0]%></div><%}%>
+  <div style="display:grid;grid-template-columns:1fr 400px;gap:28px;align-items:start;">
+    <div>
+      <h2 style="font-family:'Roboto',sans-serif;font-weight:700;color:var(--lavender-light);margin-bottom:18px;">Combo Deals</h2>
+      <% if(!deals.length){%><div class="empty-state"><div class="empty-icon">🔗</div><h3>No combo deals</h3><p style="color:var(--text-muted)">Create your first combo deal!</p></div><%}%>
+      <% deals.forEach(d=> { %>
+      <% const selectedIds = (d.product_ids || d.products.map(p=>p.id)).map(Number); %>
+      <div class="form-section" style="margin-bottom:16px;">
+        <form method="POST" action="/admin/combos/<%= d.id %>?_method=PUT" enctype="multipart/form-data">
+          <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:12px;">
+            <div style="display:flex;gap:12px;align-items:center;">
+              <% if(d.image){ %>
+              <img src="<%= d.image %>" alt="<%= d.title %>" style="width:56px;height:56px;object-fit:cover;border-radius:8px;border:1px solid rgba(255,255,255,.12);flex-shrink:0;">
+              <% } else { %>
+              <div style="width:56px;height:56px;border-radius:8px;background:rgba(255,255,255,.06);display:flex;align-items:center;justify-content:center;font-size:1.4rem;flex-shrink:0;">🔗</div>
+              <% } %>
+              <span style="font-family:'Roboto',sans-serif;font-weight:600;font-size:1rem;color:var(--silver);"><%= d.title %></span>
+            </div>
+            <span style="font-size:.72rem;padding:3px 10px;border-radius:12px;background:<%= d.is_active?'rgba(76,175,125,.15)':'rgba(224,82,82,.15)' %>;color:<%= d.is_active?'#4caf7d':'#e05252' %>;border:1px solid <%= d.is_active?'rgba(76,175,125,.3)':'rgba(224,82,82,.3)' %>"><%= d.is_active?'Active':'Inactive' %></span>
+          </div>
+
+          <div class="form-group"><label>Combo Title *</label><input type="text" name="title" required value="<%= d.title %>"></div>
+          <div class="form-group"><label>Description</label><textarea name="description" rows="2"><%= d.description || '' %></textarea></div>
+          <div class="form-group">
+            <label>Combo Image <%= d.image ? '(replace)' : '' %></label>
+            <input type="file" name="image" accept="image/*">
+            <small style="color:var(--text-muted);font-size:.72rem;display:block;margin-top:4px;">Khaali chhodo to current image rahegi. Single combo image dene par products ki thumbnails ki jagah wahi dikhegi.</small>
+          </div>
+          <div class="form-group"><label>Combo Price (₹) *</label><input type="number" name="combo_price" required min="1" step="1" value="<%= Number(d.combo_price) %>"></div>
+          <div class="form-group">
+            <label>Products *</label>
+            <div style="max-height:180px;overflow-y:auto;border:1px solid rgba(255,255,255,.08);border-radius:8px;padding:8px;">
+              <% products.forEach(p => { %>
+              <label style="display:flex;align-items:center;gap:8px;padding:5px 4px;cursor:pointer;font-size:.85rem;color:var(--silver);border-bottom:1px solid rgba(255,255,255,.04);">
+                <input type="checkbox" name="product_ids" value="<%= p.id %>" <%= selectedIds.includes(Number(p.id)) ? 'checked' : '' %>>
+                <span><%= p.name %> — ₹<%= p.price %></span>
+              </label>
+              <% }) %>
+            </div>
+          </div>
+          <div class="form-group" style="display:flex;align-items:center;gap:10px;">
+            <input type="checkbox" name="is_active" id="combo_active_<%= d.id %>" <%= d.is_active ? 'checked' : '' %>>
+            <label for="combo_active_<%= d.id %>" style="margin:0;cursor:pointer;">Active</label>
+          </div>
+          <% if(d.products.length > 1) { %>
+          <div style="font-size:.78rem;color:var(--text-muted);margin-bottom:12px;">
+            Regular total: ₹<%= d.products.reduce((s,p) => s + Number(p.price), 0).toLocaleString('en-IN') %>
+            → Save ₹<%= (d.products.reduce((s,p) => s + Number(p.price), 0) - Number(d.combo_price)).toLocaleString('en-IN') %>
+          </div>
+          <% } %>
+          <div style="display:flex;gap:8px;">
+            <button type="submit" class="btn-primary btn-sm" style="flex:1;">Save Changes</button>
+          </div>
+        </form>
+        <form method="POST" action="/admin/combos/<%= d.id %>?_method=DELETE" onsubmit="return confirm('Delete this combo deal?')" style="margin-top:8px;">
+          <button type="submit" class="btn-danger btn-sm" style="width:100%;">Delete Combo</button>
+        </form>
+      </div>
+      <% }) %>
+    </div>
+    <div class="form-section">
+      <h3>Create Combo Deal</h3>
+      <form method="POST" action="/admin/combos" enctype="multipart/form-data">
+        <div class="form-group"><label>Combo Title *</label><input type="text" name="title" required placeholder="Power Combo"></div>
+        <div class="form-group"><label>Description</label><textarea name="description" rows="2" placeholder="Pyrite + Tiger Eye for ultimate success..."></textarea></div>
+        <div class="form-group">
+          <label>Combo Image</label>
+          <input type="file" name="image" accept="image/*">
+          <small style="color:var(--text-muted);font-size:.72rem;display:block;margin-top:4px;">Combo ki ek single image. Na dene par products ki images dikhengi.</small>
+        </div>
+        <div class="form-group"><label>Combo Price (₹) *</label><input type="number" name="combo_price" required min="1" step="1" placeholder="999"></div>
+        <div class="form-group">
+          <label>Select Products *</label>
+          <div style="max-height:250px;overflow-y:auto;border:1px solid rgba(255,255,255,.08);border-radius:8px;padding:8px;">
+            <% products.forEach(p => { %>
+            <label style="display:flex;align-items:center;gap:8px;padding:6px 4px;cursor:poRoboto;font-size:.85rem;color:var(--silver);border-bottom:1px solid rgba(255,255,255,.04);">
+              <input type="checkbox" name="product_ids" value="<%= p.id %>">
+              <span><%= p.name %> — ₹<%= p.price %></span>
+            </label>
+            <% }) %>
+          </div>
+        </div>
+        <div class="form-group" style="display:flex;align-items:center;gap:10px;">
+          <input type="checkbox" name="is_active" id="combo_active" checked>
+          <label for="combo_active" style="margin:0;cursor:poRoboto;">Active</label>
+        </div>
+        <button type="submit" class="btn-primary" style="width:100%;">Create Combo 🔗</button>
+      </form>
+    </div>
+  </div>
+</div>
+<script src="/js/main.js?v=2e61b06716d2"></script></body></html>

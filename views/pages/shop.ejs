@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<link rel="icon" type="image/png" sizes="32x32" href="/images/logo/favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/images/logo/favicon-16.png">
+<link rel="shortcut icon" href="/images/logo/favicon.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/images/logo/apple-touch-icon.png">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title><%= pageTitle %></title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/style.css?v=a4c169302152">
+
+<style>
+/* --- JAPAM STYLE MOBILE SHOP LAYOUT --- */
+.shop-header-mobile { display: none; } 
+
+@media (max-width: 768px) {
+  /* PC wala toolbar aur breadcrumb hide karo clean look ke liye */
+  .shop-toolbar { display: none !important; }
+  .breadcrumb { display: none !important; }
+
+  /* 1. Header (Search & Title) */
+  .shop-header-mobile {
+    display: block;
+    width: 100%;
+    padding: 20px 15px 10px;
+  }
+
+  .shop-page-title {
+    text-align: center;
+    font-size: 2.2rem;
+    color: #1a1a2e; /* Dark Blue Text */
+    margin-bottom: 20px;
+    font-family: 'Cinzel', serif;
+  }
+
+  /* 2. Big Search Bar */
+  .shop-search-form {
+    position: relative;
+    margin-bottom: 20px;
+  }
+  .shop-search-form input {
+    width: 100%;
+    padding: 14px 15px 14px 45px;
+    background-color: #f1efea; /* Japam style off-grey */
+    border: none;
+    border-radius: 6px;
+    font-size: 1rem;
+    color: #333;
+    outline: none;
+  }
+  .shop-search-form svg {
+    position: absolute;
+    left: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #555;
+  }
+
+  /* 3. Filter & Sort Toolbar */
+  .shop-toolbar-mobile {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #e0e0e0;
+    padding-bottom: 15px;
+    margin-bottom: 15px;
+  }
+
+  .btn-filter-sort {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: transparent;
+    border: 1px solid #ccc;
+    padding: 8px 18px;
+    border-radius: 6px;
+    font-size: 0.95rem;
+    color: #1a1a2e;
+    cursor: pointer;
+    font-weight: 600;
+  }
+
+  .view-icon { color: #1a1a2e; }
+
+  /* 4. Filters Menu (Limited Options) */
+  .shop-filters {
+    display: none; /* By default hidden */
+    width: 100%;
+    margin-bottom: 20px;
+    background: #ffffff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    border: 1px solid #eee;
+  }
+  .shop-filters.show-filters { display: block; }
+  
+  .filter-title { 
+    color: #1a1a2e; 
+    font-weight: 600; 
+    border-bottom: 1px solid #eee; 
+    padding-bottom: 8px; 
+    margin-bottom: 12px; 
+  }
+}
+</style>
+</head>
+<body data-loggedin="<%= currentUser?'true':'false' %>">
+<div class="particles" id="particles"></div>
+<%- include('../partials/navbar') %>
+
+<div class="page-wrap wide">
+  
+  <!-- Breadcrumb PC ke liye (Mobile par hide rahega) -->
+  <div class="breadcrumb">
+    <a href="/">Home</a><span>›</span><span>Shop</span>
+    <% if(activeFilters.category){%><span>›</span><span style="text-transform:capitalize;"><%= activeFilters.category.replace(/-/g,' ') %></span><%}%>
+    <% if(activeFilters.search){%><span>›</span><span>"<%= activeFilters.search %>"</span><%}%>
+  </div>
+
+  <!-- JAPAM STYLE MOBILE HEADER -->
+  <div class="shop-header-mobile">
+    <h1 class="shop-page-title"><%= activeFilters.search ? 'Search' : 'Shop' %></h1>
+    
+    <form action="/shop" method="GET" class="shop-search-form">
+      <!-- Search Icon -->
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20">
+        <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+      </svg>
+      <input type="text" name="search" value="<%= activeFilters.search || '' %>" placeholder="Search for products...">
+    </form>
+
+    <div class="shop-toolbar-mobile">
+      <button id="mobileFilterToggle" class="btn-filter-sort">
+        Filter & Sort 
+        <!-- Filter Icon -->
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+          <path d="M4 6h16M4 12h16M4 18h16"/>
+        </svg>
+      </button>
+      
+      <!-- List View Icon (Just for UI aesthetics like Japam) -->
+      <div class="view-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="24" height="24">
+          <line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line>
+        </svg>
+      </div>
+    </div>
+  </div>
+
+  <div class="shop-wrap">
+    
+    <!-- REDUCED FILTERS SIDEBAR -->
+    <aside class="shop-filters reveal" id="shopFiltersSidebar">
+      <form id="filterForm" action="/shop" method="GET">
+        
+        <!-- Preserve Search Query -->
+        <% if(activeFilters.search){%><input type="hidden" name="search" value="<%= activeFilters.search %>"><%}%>
+
+        <!-- 1. SORT OPTIONS (Integrated into filters) -->
+        <div class="filter-group">
+          <div class="filter-title">Sort By</div>
+          <select name="sort" id="sortSelect" style="width:100%; padding:10px; border: 1px solid #ddd; border-radius: 4px; outline: none;">
+            <option value="featured"   <%=!activeFilters.sort||activeFilters.sort==='featured'  ?'selected':''%>>Featured</option>
+            <option value="newest"     <%=activeFilters.sort==='newest'     ?'selected':''%>>Newest First</option>
+            <option value="price_asc"  <%=activeFilters.sort==='price_asc'  ?'selected':''%>>Price: Low to High</option>
+            <option value="price_desc" <%=activeFilters.sort==='price_desc' ?'selected':''%>>Price: High to Low</option>
+            <option value="top_rated"  <%=activeFilters.sort==='top_rated'  ?'selected':''%>>Top Rated</option>
+          </select>
+        </div>
+
+        <!-- 2. CATEGORY OPTIONS -->
+        <div class="filter-group">
+          <div class="filter-title">Category</div>
+          <div class="filter-option">
+            <label><input type="radio" name="category" value="" <%=!activeFilters.category?'checked':''%>> All Products</label>
+          </div>
+          <% categories.forEach(cat => { %>
+          <div class="filter-option">
+            <label><input type="radio" name="category" value="<%= cat.slug %>" <%=activeFilters.category===cat.slug?'checked':''%>> <%= cat.icon %> <%= cat.name %></label>
+          </div>
+          <% }) %>
+        </div>
+
+        <!-- 3. PRICE RANGE OPTIONS -->
+        <div class="filter-group">
+          <div class="filter-title">Price Range</div>
+          <div class="price-inputs">
+            <input type="number" name="min" placeholder="₹Min" value="<%= activeFilters.min||'' %>">
+            <span style="color:var(--text-muted)">–</span>
+            <input type="number" name="max" placeholder="₹Max" value="<%= activeFilters.max||'' %>">
+          </div>
+        </div>
+
+        <button type="submit" class="btn-primary" style="width:100%;padding:12px; margin-top: 10px;">Apply Filters</button>
+        <a href="/shop" style="display:block;text-align:center;margin-top:15px;color:var(--error);font-size:.85rem; font-weight:600;">Clear All</a>
+      </form>
+    </aside>
+
+    <div class="shop-main">
+      <!-- PC Toolbar (Hidden on mobile) -->
+      <div class="shop-toolbar">
+        <p style="color:var(--text-muted)"><strong style="color:var(--text)"><%= totalCount %></strong> product<%= totalCount!==1?'s':'' %> found</p>
+      </div>
+
+      <% if(!products.length) { %>
+        <div class="empty-state">
+          <div class="empty-icon">🔍</div>
+          <h3>No products found</h3>
+          <p style="color:var(--text-muted);margin:10px 0 24px;">Try different filters or search terms.</p>
+          <a href="/shop" class="btn-outline">View All</a>
+        </div>
+      <% } else { %>
+        <div class="products-grid">
+          <% products.forEach((product,i) => { %>
+            <%- include('../partials/product-card', {product, delay: i%4}) %>
+          <% }) %>
+        </div>
+      <% } %>
+    </div>
+  </div>
+</div>
+
+<% if(pageCount>1) { %><nav class="shop-pagination" aria-label="Product pages">
+  <% if(page>1) { %><a class="btn-outline" rel="prev" href="<%= pageUrl(page-1) %>">← Previous</a><% } %>
+  <span>Page <%= page %> of <%= pageCount %></span>
+  <% if(page<pageCount) { %><a class="btn-outline" rel="next" href="<%= pageUrl(page+1) %>">Next →</a><% } %>
+</nav><% } %>
+<%- include('../partials/footer') %>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  // Mobile Filter Toggle Magic
+  const filterBtn = document.getElementById('mobileFilterToggle');
+  const filtersSidebar = document.getElementById('shopFiltersSidebar');
+
+  if(filterBtn && filtersSidebar) {
+    filterBtn.addEventListener('click', function() {
+      filtersSidebar.classList.toggle('show-filters');
+      
+      // Update button text when open/close
+      if(filtersSidebar.classList.contains('show-filters')){
+         filterBtn.innerHTML = '✖ Close Filters';
+         filterBtn.style.color = 'var(--error)';
+         filterBtn.style.borderColor = 'var(--error)';
+      } else {
+         filterBtn.innerHTML = 'Filter & Sort <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M4 6h16M4 12h16M4 18h16"/></svg>';
+         filterBtn.style.color = '#1a1a2e';
+         filterBtn.style.borderColor = '#ccc';
+      }
+    });
+  }
+
+  // Submit form automatically on Radio Button Change
+  document.querySelectorAll('#filterForm input[type="radio"]').forEach(r=>{
+    r.addEventListener('change',()=>document.getElementById('filterForm').submit());
+  });
+});
+</script>
+</body></html>

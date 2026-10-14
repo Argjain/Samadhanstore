@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8">
+<!-- Favicon -->
+<link rel="icon" type="image/png" sizes="32x32" href="/images/logo/favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/images/logo/favicon-16.png">
+<link rel="shortcut icon" href="/images/logo/favicon.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/images/logo/apple-touch-icon.png"><meta name="viewport" content="width=device-width,initial-scale=1"><title><%= pageTitle %></title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/style.css?v=a4c169302152"></head>
+<body data-loggedin="true"><div class="particles" id="particles"></div><%- include('../partials/navbar') %>
+<div class="page-wrap">
+  <div class="breadcrumb"><a href="/">Home</a><span>›</span><span>My Account</span></div>
+  <div style="display:flex;align-items:center;gap:18px;margin-bottom:36px;" class="reveal">
+    <div style="width:64px;height:64px;border-radius:50%;background:rgba(45,27,105,.4);border:2px solid var(--lavender);display:flex;align-items:center;justify-content:center;font-size:1.8rem;">🧘</div>
+    <div>
+      <h1 style="font-family:'Cinzel',serif;font-size:1.8rem;color:var(--silver);"><%= user.name %></h1>
+      <p style="color:var(--text-muted);"><%= user.email %></p>
+    </div>
+    <a href="/auth/logout" class="btn-outline" style="margin-left:auto;font-size:.72rem;">Logout</a>
+  </div>
+
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:16px;margin-bottom:40px;" class="reveal">
+    <div class="stat-card"><div class="stat-icon">📦</div><div class="stat-label">Total Orders</div><div class="stat-value"><%= orders.length %></div></div>
+    <div class="stat-card"><div class="stat-icon">💰</div><div class="stat-label">Total Spent</div><div class="stat-value" style="font-size:1.2rem;">₹<%= Number(orders.reduce((s,o)=>s+parseFloat(o.total),0)).toLocaleString('en-IN') %></div></div>
+    <div class="stat-card"><div class="stat-icon">🛒</div><div class="stat-label">Cart Items</div><div class="stat-value"><%= cartCount %></div></div>
+    <div class="stat-card"><a href="/wishlist" style="text-decoration:none;"><div class="stat-icon">❤️</div><div class="stat-label">Wishlist</div><div class="stat-value" style="font-size:1rem;color:var(--lavender-light);">View →</div></a></div>
+  </div>
+
+  <div class="admin-section-head reveal">My Orders</div>
+  <% if(!orders.length) { %>
+    <div class="empty-state"><div class="empty-icon">📦</div><h3>No Orders Yet</h3><p style="color:var(--text-muted);margin:10px 0 24px;">You haven't placed any orders yet.</p><a href="/shop" class="btn-primary">Start Shopping</a></div>
+  <% } else { %>
+  <div style="overflow-x:auto;" class="reveal">
+    <table class="admin-table">
+      <thead><tr><th>Order ID</th><th>Date</th><th>Items</th><th>Total</th><th>Status</th><th>Track</th></tr></thead>
+      <tbody>
+        <% orders.forEach(o => {
+          const sc={placed:'#e8b84b',confirmed:'#4a90e2',processing:'#8b7fd4',shipped:'#9b59b6',out_for_delivery:'#e8a84b',delivered:'#4caf7d',cancelled:'#e05252'}[o.order_status]||'#9a8460';
+        %>
+        <tr>
+          <td style="font-family:'Cinzel',serif;font-size:.82rem;color:var(--lavender-light);"><%= o.order_id %></td>
+          <td style="color:var(--text-muted);font-size:.85rem;"><%= new Date(o.created_at).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'}) %></td>
+          <td style="font-size:.85rem;"><% o.items.forEach(i=>{%><div><%= i.name %> ×<%= i.qty %></div><%})%></td>
+          <td style="font-family:'Cinzel',serif;color:var(--lavender-light);"><%= business.currencySymbol %><%= Number(o.total).toLocaleString('en-IN') %></td>
+          <td><span style="background:<%= sc %>22;color:<%= sc %>;border:1px solid <%= sc %>44;font-family:'Cinzel',serif;font-size:.62rem;letter-spacing:.08em;padding:3px 10px;border-radius:12px;text-transform:capitalize;white-space:nowrap;"><%= o.order_status.replace(/_/g,' ') %></span></td>
+          <td><a href="/orders/track/<%= o.order_id %>" style="color:var(--lavender);font-size:.82rem;">Track →</a></td>
+        </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+  <% } %>
+</div>
+<%- include('../partials/footer') %></body></html>

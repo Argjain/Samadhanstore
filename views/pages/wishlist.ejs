@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/logo/favicon-32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/logo/favicon-16.png">
+  <link rel="shortcut icon" href="/images/logo/favicon.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/logo/apple-touch-icon.png">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>
+    <%= pageTitle %>
+  </title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css?v=a4c169302152">
+</head>
+
+<body data-loggedin="true">
+  <div class="particles" id="particles"></div><%- include('../partials/navbar') %>
+    <div class="page-wrap">
+      <div class="breadcrumb"><a href="/">Home</a><span>›</span><a
+          href="/account">Account</a><span>›</span><span>Wishlist</span></div>
+      <h1 style="font-family:'Cinzel',serif;font-size:2rem;color:var(--silver);margin-bottom:32px;">My Wishlist ❤️</h1>
+      <% if(!items.length) { %>
+        <div class="empty-state">
+          <div class="empty-icon">🤍</div>
+          <h3>Your wishlist is empty</h3>
+          <p style="color:var(--text-muted);margin:10px 0 24px;">Save products here for later.</p><a href="/shop"
+            class="btn-primary">Browse Products</a>
+        </div>
+        <% } else { %>
+          <div class="products-grid">
+            <% items.forEach((item,i)=> { %>
+              <div class="product-card reveal" style="transition-delay:<%= i*.08 %>s">
+                <button class="wishlist-btn active" data-product-id="<%= item.product_id %>"
+                  title="Remove from wishlist">❤️</button>
+                <a href="/product/<%= item.slug %>">
+                  <div class="product-imgs">
+                    <img src="<%= (Array.isArray(item.images) ? item.images[0] : JSON.parse(item.images||'[]')[0])||'' %>" alt="<%= item.name %>" loading="lazy">
+                    <div class="product-img-placeholder" style="display:none">🪬</div>
+                  </div>
+                </a>
+                <div class="product-info">
+                  <h3><a href="/product/<%= item.slug %>">
+                      <%= item.name %>
+                    </a></h3>
+                  <div class="price-row">
+                    <span class="price">
+                      <%= business.currencySymbol %>
+                        <%= Number(item.price).toLocaleString('en-IN') %>
+                    </span>
+                    <% if(item.original_price){%><span class="price-original">
+                        <%= business.currencySymbol %>
+                          <%= Number(item.original_price).toLocaleString('en-IN') %>
+                      </span>
+                      <%}%>
+                  </div>
+                  <button class="btn-add-cart" data-product-id="<%= item.product_id %>">Add to Cart</button>
+                </div>
+              </div>
+              <% }) %>
+          </div>
+          <% } %>
+    </div>
+    <%- include('../partials/footer') %>
+</body>
+
+</html>

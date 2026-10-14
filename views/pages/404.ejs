@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8">
+<!-- Favicon -->
+<link rel="icon" type="image/png" sizes="32x32" href="/images/logo/favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/images/logo/favicon-16.png">
+<link rel="shortcut icon" href="/images/logo/favicon.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/images/logo/apple-touch-icon.png"><meta name="viewport" content="width=device-width,initial-scale=1"><title>404 – Page Not Found</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/style.css?v=a4c169302152"></head>
+<body data-loggedin="<%= (typeof currentUser !== 'undefined' && currentUser) ? 'true' : 'false' %>"><div class="particles" id="particles"></div><%- include('../partials/navbar') %>
+<div class="page-wrap" style="text-align:center;padding-top:130px;">
+  <div style="font-size:5rem;margin-bottom:16px;animation:fadeUp .8s ease both;">🔮</div>
+  <h1 style="font-family:'Cinzel',serif;font-size:3rem;color:var(--silver);margin-bottom:10px;">404</h1>
+  <p style="color:var(--text-muted);font-size:1.15rem;margin-bottom:32px;">This page doesn't exist or has been moved.</p>
+  <div style="display:flex;gap:14px;justify-content:center;flex-wrap:wrap;">
+    <a href="/" class="btn-primary">Go Home</a>
+    <a href="/shop" class="btn-outline">Browse Shop</a>
+  </div>
+</div>
+<%- include('../partials/footer') %></body></html>

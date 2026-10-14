@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/logo/favicon-32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/logo/favicon-16.png">
+  <link rel="shortcut icon" href="/images/logo/favicon.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/logo/apple-touch-icon.png">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title><%= pageTitle %></title>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Cormorant+Garamond:wght@300;400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css?v=a4c169302152">
+</head>
+
+<body class="admin-body">
+  <%- include('../../partials/admin-nav') %>
+
+  <div class="admin-wrap">
+    <% if(success && success.length){ %><div class="alert alert-success">✓ <%= success[0] %></div><% } %>
+    
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:12px;">
+      <h2 style="font-family:'Cinzel',serif;color:var(--lavender-light);">All Products (<%= products.length %>)</h2>
+      <a href="/admin/products/new" class="btn-primary btn-sm">+ Add New Product</a>
+    </div>
+
+    <div style="overflow-x:auto;">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>Image</th>
+            <th>Name</th>
+            <th>Category</th>
+            <th>Price</th>
+            <th>Stock</th>
+            <th>Featured</th>
+            <th>Active</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% products.forEach(p=>{ %>
+          <tr>
+            <td>
+              <% const imgs=(p.images||[]).filter(Boolean); const img1=imgs[0]||''; %>
+              <% if(img1) { %>
+                <img src="<%= img1 %>" style="width:52px;height:52px;object-fit:cover;border-radius:6px;border:1px solid var(--border);background:var(--bg2);" onerror="this.style.display='none'">
+              <% } else { %>
+                <div style="width:52px;height:52px;border-radius:6px;border:1px solid var(--border);background:var(--bg2);display:flex;align-items:center;justify-content:center;color:var(--text-muted);font-size:18px;">🪬</div>
+              <% } %>
+            </td>
+            <td>
+              <div style="font-weight:600;font-size:.9rem;"><%= p.name %></div>
+              <% if(p.badge){ %><span style="font-size:.68rem;color:var(--lavender);"><%= p.badge %></span><% } %>
+            </td>
+            <td style="color:var(--text-muted);font-size:.85rem;"><%= p.category_name||'—' %></td>
+            <td style="font-family:'Cinzel',serif;color:var(--lavender-light);white-space:nowrap;">
+              <%= business.currencySymbol %><%= Number(p.price).toLocaleString('en-IN') %>
+              <% if(p.original_price){ %>
+                <br><span style="color:var(--text-muted);text-decoration:line-through;font-size:.8rem;"><%= business.currencySymbol %><%= Number(p.original_price).toLocaleString('en-IN') %></span>
+              <% } %>
+            </td>
+            <td style="color:<%= p.stock<10?'var(--error)':p.stock<20?'var(--warning)':'var(--success)' %>;font-weight:600;"><%= p.stock %></td>
+            <td><%= p.is_featured?'⭐ Yes':'—' %></td>
+            
+            <!-- 👇 YAHAN CHANGE KIYA HAI: hyphen (-) use kiya hai html render karne ke liye -->
+            <td><%- p.is_active ? '<span style="color:var(--success)">✅</span>' : '<span style="color:var(--error)">❌</span>' %></td>
+            
+            <td>
+              <div style="display:flex;gap:6px;flex-wrap:wrap;">
+                <a href="/admin/products/<%= p.id %>/edit" class="btn-outline btn-sm">Edit</a>
+                <form method="POST" action="/admin/products/<%= p.id %>?_method=DELETE" onsubmit="return confirm('Are you sure you want to delete this product?')">
+                  <button type="submit" class="btn-danger btn-sm">Delete</button>
+                </form>
+              </div>
+            </td>
+          </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <script src="/js/main.js?v=2e61b06716d2"></script>
+</body>
+</html>

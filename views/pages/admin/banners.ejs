@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8">
+<!-- Favicon -->
+<link rel="icon" type="image/png" sizes="32x32" href="/images/logo/favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/images/logo/favicon-16.png">
+<link rel="shortcut icon" href="/images/logo/favicon.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/images/logo/apple-touch-icon.png"><meta name="viewport" content="width=device-width,initial-scale=1"><title><%= pageTitle %></title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Cormorant+Garamond:wght@300;400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/style.css?v=a4c169302152"></head>
+<body class="admin-body"><%- include('../../partials/admin-nav') %>
+<div class="admin-wrap">
+  <%if(success&&success.length){%><div class="alert alert-success">✓ <%=success[0]%></div><%}%>
+  <div style="display:grid;grid-template-columns:1fr 380px;gap:28px;align-items:start;">
+    <div>
+      <h2 style="font-family:'Cinzel',serif;color:var(--lavender-light);margin-bottom:18px;">Promo Banners</h2>
+      <div class="alert alert-info" style="margin-bottom:18px;">💡 Ye banners site ke top pe dikhte hain. Yahan se aap image banner bhi add kar sakte ho offers ke liye!</div>
+      <% banners.forEach(b=>{ %>
+      <div style="background:<%= b.bg_color %>;color:<%= b.text_color %>;padding:12px 20px;border-radius:8px;margin-bottom:14px;display:flex;flex-direction:column;gap:10px;">
+        <% if(b.image) { %>
+          <img src="<%= b.image %>" style="max-height: 100px; object-fit: contain; border-radius: 4px;" alt="Banner">
+        <% } %>
+        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;">
+          <span style="font-size:.85rem;flex:1;"><%= b.text %></span>
+          <div style="display:flex;gap:8px;">
+            <form method="POST" action="/admin/banners/<%= b.id %>?_method=PUT" enctype="multipart/form-data">
+              <input type="hidden" name="text" value="<%= b.text %>">
+              <input type="hidden" name="link" value="<%= b.link||'' %>">
+              <input type="hidden" name="bg_color" value="<%= b.bg_color %>">
+              <input type="hidden" name="text_color" value="<%= b.text_color %>">
+              <input type="hidden" name="is_active" value="<%= b.is_active?'':'on' %>">
+              <button type="submit" style="background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.3);color:inherit;font-size:.72rem;padding:4px 12px;border-radius:4px;cursor:pointer;">
+                <%= b.is_active?'Deactivate':'Activate' %>
+              </button>
+            </form>
+            <form method="POST" action="/admin/banners/<%= b.id %>?_method=DELETE" onsubmit="return confirm('Delete?')">
+              <button type="submit" style="background:rgba(224,82,82,.3);border:1px solid rgba(224,82,82,.5);color:#fff;font-size:.72rem;padding:4px 12px;border-radius:4px;cursor:pointer;">Del</button>
+            </form>
+          </div>
+        </div>
+      </div>
+      <% }) %>
+    </div>
+    <div class="form-section">
+      <h3>Add Banner</h3>
+      <form method="POST" action="/admin/banners" enctype="multipart/form-data">
+        <div class="form-group"><label>Banner Image (Offers ke liye)</label><input type="file" name="image" accept="image/*" style="background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:10px;width:100%;"></div>
+        <div class="form-group"><label>Banner Text (optional)</label><textarea name="text" rows="2" placeholder="🎉 Use code SAMADHAN10 for 10% OFF!"></textarea></div>
+        <div class="form-group"><label>Link (optional)</label><input type="text" name="link" placeholder="/shop"></div>
+        <div class="form-row">
+          <div class="form-group"><label>Background Color</label><input type="color" name="bg_color" value="#2d1b69" style="height:40px;"></div>
+          <div class="form-group"><label>Text Color</label><input type="color" name="text_color" value="#e8e4f0" style="height:40px;"></div>
+        </div>
+        <button type="submit" class="btn-primary" style="width:100%;">Add Banner</button>
+      </form>
+    </div>
+  </div>
+</div>
+<script src="/js/main.js?v=2e61b06716d2"></script></body></html>

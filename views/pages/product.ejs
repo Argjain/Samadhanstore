@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<link rel="icon" type="image/png" sizes="32x32" href="/images/logo/favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/images/logo/favicon-16.png">
+<link rel="shortcut icon" href="/images/logo/favicon.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/images/logo/apple-touch-icon.png">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title><%= pageTitle %></title>
+<meta name="description" content="<%= pageDesc||'' %>">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/style.css?v=a4c169302152">
+<style>
+  #mainImg { transition: opacity 0.3s ease; }
+</style>
+</head>
+<body data-loggedin="<%= currentUser?'true':'false' %>">
+<div class="particles" id="particles"></div>
+<%- include('../partials/navbar') %>
+
+<div class="page-wrap">
+  <div class="breadcrumb">
+    <a href="/">Home</a><span>›</span>
+    <a href="/shop">Shop</a><span>›</span>
+    <a href="/shop?category=<%= product.category_slug %>"><%= product.category_name %></a><span>›</span>
+    <span><%= product.name %></span>
+  </div>
+
+  <div class="product-detail">
+    <div class="product-gallery reveal">
+      <div class="main-img product-carousel" id="swipeContainer">
+        <div class="product-carousel-track" id="galleryTrack">
+          <% (product.images || []).filter(Boolean).forEach((img, i) => { %>
+            <img class="product-carousel-img <%= i===0?'active':'' %>" src="<%= imageUrl(img,768) %>" srcset="<%= imageUrl(img,480) %> 480w, <%= imageUrl(img,768) %> 768w, <%= imageUrl(img,1200) %> 1200w" sizes="(max-width:768px) 92vw, 50vw" width="768" height="768" loading="<%= i===0?'eager':'lazy' %>" fetchpriority="<%= i===0?'high':'low' %>" decoding="async" alt="<%= product.name %> <%= i+1 %>" data-index="<%= i %>">
+          <% }) %>
+        </div>
+      </div>
+      <% if(product.images && product.images.filter(Boolean).length > 1) { %>
+      <div class="thumb-imgs">
+        <% product.images.filter(Boolean).forEach((img, i) => { %>
+        <div class="thumb-img <%= i===0?'active':'' %>" data-index="<%= i %>">
+          <img src="<%= imageUrl(img,96) %>" width="64" height="64" loading="lazy" alt="<%= product.name %> <%= i+1 %>">
+        </div>
+        <% }) %>
+      </div>
+      <% } %>
+    </div>
+
+    <div class="reveal">
+      <div class="product-cat"><%= product.category_name %></div>
+      <h1 style="font-family:'Roboto',sans-serif;font-size:2rem;font-weight:700;color:var(--silver);margin-bottom:12px;"><%= product.name %></h1>
+
+      <% if(avgRating > 0) { %>
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px;">
+        <span style="color:var(--warning);font-size:1.1rem;"><%= '★'.repeat(stars(Math.round(avgRating))) %><%= '☆'.repeat(5-stars(Math.round(avgRating))) %></span>
+        <span style="color:var(--text-muted);font-size:.9rem;"><%= avgRating %> (<%= reviews.length %> reviews)</span>
+      </div>
+      <% } %>
+
+      <% if(product.combo_qty && product.combo_price) { %>
+      <div style="margin-bottom:16px;">
+        <span class="combo-badge" style="font-size:0.85rem;padding:6px 12px;">
+          Buy <%= product.combo_qty %>+ items at ₹<%= product.combo_price %> each!
+        </span>
+      </div>
+      <% } %>
+
+      <div class="price-container" style="margin-bottom:18px;">
+        <span class="price" id="displayPrice" data-regular="<%= product.price %>" data-combo-qty="<%= product.combo_qty||0 %>" data-combo-price="<%= product.combo_price||0 %>" style="font-size:2rem;"><%= business.currencySymbol %><%= Number(product.price).toLocaleString('en-IN') %></span>
+        <% if(product.original_price) { %>
+          <span class="price-original" style="font-size:1.2rem;"><%= business.currencySymbol %><%= Number(product.original_price).toLocaleString('en-IN') %></span>
+          <span class="price-discount" style="font-size:1rem;"><%= discount %>% OFF</span>
+        <% } %>
+      </div>
+
+      <% if(product.badge) { %>
+      <div style="margin-bottom:16px;"><span style="background:var(--indigo-mid);border:1px solid var(--lavender);color:var(--lavender-light);font-size:.72rem;font-weight:600;padding:5px 16px;border-radius:20px;"><%= product.badge %></span></div>
+      <% } %>
+
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:22px;">
+        <span style="font-size:.75rem;font-weight:600;letter-spacing:.1em;color:var(--text-muted);">QTY</span>
+        <button class="btn-ghost" id="btnQtyMinus" aria-label="Decrease quantity" style="font-size:1.4rem;border:1px solid var(--border);width:44px;height:44px;border-radius:6px;">−</button>
+        <input type="number" id="qty" aria-label="Quantity" value="1" min="1" max="<%= Math.min(10,Math.max(1,product.stock)) %>" style="width:50px;text-align:center;background:rgba(255,255,255,.05);border:1px solid var(--border);color:var(--text);padding:8px;border-radius:4px;">
+        <button class="btn-ghost" id="btnQtyPlus" aria-label="Increase quantity" style="font-size:1.4rem;border:1px solid var(--border);width:44px;height:44px;border-radius:6px;">+</button>
+        <span style="color:var(--text-muted);font-size:.88rem;"><%= product.stock > 0 ? 'In Stock ✓' : 'Out of Stock' %></span>
+      </div>
+
+      <p id="purchaseTotal" aria-live="polite" style="margin-bottom:12px"></p>
+      <div style="display:flex;gap:12px;margin-bottom:24px;flex-wrap:wrap;">
+        <button class="btn-primary btn-add-cart" data-product-id="<%= product.id %>" style="flex:1;" <%= product.stock<1?'disabled':'' %>>Add to Cart</button>
+        <button id="btnBuyNow" <%= product.stock<1?'disabled':'' %> class="btn-outline" data-product-id="<%= product.id %>" data-product-name="<%= product.name %>" data-product-img="<%= product.images&&product.images[0]?product.images[0]:'' %>" style="flex:1;display:flex;align-items:center;justify-content:center;">Buy Now</button>
+        <% if(currentUser) { %>
+        <button class="wishlist-btn <%= isWishlisted?'active':'' %>" data-product-id="<%= product.id %>" style="width:48px;height:48px;font-size:1.4rem;border-radius:var(--radius);">
+          <%= isWishlisted?'❤️':'🤍' %>
+        </button>
+        <% } %>
+      </div>
+
+      <div style="display:flex;gap:16px;flex-wrap:wrap;padding-top:18px;border-top:1px solid var(--border);">
+        <span style="font-size:.85rem;color:var(--text-muted);">🔒 Secure Payment</span>
+        <span style="font-size:.85rem;color:var(--text-muted);">🚚 Ships in 1-2 days</span>
+        <span style="font-size:.85rem;color:var(--text-muted);">↩️ <%= S&&S.return_policy||'7-day returns' %></span>
+        <span style="font-size:.85rem;color:var(--text-muted);">🏠 COD on select pincodes</span>
+      </div>
+
+      <details class="product-details-section"><summary>Product description</summary><p><%= product.description %></p></details>
+      <% if(benefits && benefits.length) { %><details class="product-details-section"><summary>Key benefits</summary><ul><% benefits.forEach(b=>{ %><li><%= b %></li><% }) %></ul></details><% } %>
+    </div>
+  </div>
+
+  <div style="margin-top:72px;">
+    <div class="section-title reveal"><h2>Customer Reviews</h2></div>
+    <% if(reviews && reviews.length) { %>
+    <div class="reviews-grid" style="margin-bottom:40px;">
+      <% reviews.forEach(r => { %>
+      <div class="review-card reveal">
+        <div class="reviewer-avatar">👤</div>
+        <div class="review-stars"><%= '★'.repeat(stars(r.rating)) %><%= '☆'.repeat(5-stars(r.rating)) %></div>
+        <% if(r.title) { %><div class="review-title">"<%= r.title %>"</div><% } %>
+        <p class="review-text"><%= r.review %></p>
+        <div class="reviewer-name">— <%= r.name %></div>
+      </div>
+      <% }) %>
+    </div>
+    <% } %>
+
+    <% if(currentUser) { %>
+    <div class="form-section reveal" style="max-width:500px;">
+      <h3>Write a Review</h3>
+      <div class="form-group">
+        <label>Rating</label>
+        <div id="starRating" style="font-size:1.8rem;cursor:poRoboto;">
+          <span data-rating="1">☆</span><span data-rating="2">☆</span>
+          <span data-rating="3">☆</span><span data-rating="4">☆</span>
+          <span data-rating="5">☆</span>
+        </div>
+        <input type="hidden" id="ratingVal" value="5">
+      </div>
+      <div class="form-group"><label>Title</label><input type="text" id="reviewTitle" placeholder="Review title"></div>
+      <div class="form-group"><label>Review *</label><textarea id="reviewText" rows="3" placeholder="Share your experience..."></textarea></div>
+      <button class="btn-primary" id="submitReviewBtn" data-product-id="<%= product.id %>">Submit Review</button>
+    </div>
+    <% } else { %>
+    <div class="alert alert-info reveal">Please <a href="/auth/login" style="color:var(--lavender-light);">login</a> to write a review.</div>
+    <% } %>
+  </div>
+
+  <% const pCombos = (typeof productCombos !== 'undefined' ? productCombos : []).filter(d => d.products && d.products.length > 0); %>
+  <% if (pCombos.length > 0) { %>
+  <div style="margin-top:72px;">
+    <div class="section-title reveal"><h2>Combo Offers</h2><p>Buy together & save</p></div>
+    <div class="combo-grid">
+      <% pCombos.forEach(deal => { %>
+        <%
+           const origTotal = deal.products.reduce((s,p)=> s + Number(p.price||0), 0);
+           const save = Math.max(0, origTotal - Number(deal.combo_price||0));
+        %>
+        <div class="combo-card">
+          <div class="combo-imgs <%= deal.image ? 'combo-imgs-single' : '' %>">
+            <% if (deal.image) { %>
+              <div class="combo-thumb combo-thumb-main">
+                <img src="<%= imageUrl(deal.image,480) %>" alt="<%= deal.title %>" loading="lazy"
+                  onerror="this.style.display='none';this.parentElement.innerHTML='🪬'">
+              </div>
+            <% } else { %>
+              <% deal.products.slice(0,4).forEach(p => { %>
+                <div class="combo-thumb">
+                  <% const cimg = (p.images && p.images[0]) ? p.images[0] : ''; %>
+                  <% if (cimg) { %>
+                    <img src="<%= imageUrl(cimg,480) %>" alt="<%= p.name %>" loading="lazy"
+                      onerror="this.style.display='none';this.parentElement.innerHTML='🪬'">
+                  <% } else { %>🪬<% } %>
+                </div>
+              <% }) %>
+            <% } %>
+          </div>
+          <div class="combo-info">
+            <h3><%= deal.title %></h3>
+            <% if (deal.description) { %><p class="combo-desc"><%= deal.description %></p><% } %>
+            <div class="combo-items-line"><%= deal.products.map(p => p.name).join(' + ') %></div>
+            <div class="combo-price-row">
+              <span class="combo-price"><%= business.currencySymbol %><%= Number(deal.combo_price).toLocaleString('en-IN') %></span>
+              <% if (save > 0) { %>
+                <span class="combo-original"><%= business.currencySymbol %><%= Number(origTotal).toLocaleString('en-IN') %></span>
+                <span class="combo-save">Save <%= business.currencySymbol %><%= Number(save).toLocaleString('en-IN') %></span>
+              <% } %>
+            </div>
+            <button class="btn-add-combo" data-combo-id="<%= deal.id %>">Add Combo to Cart</button>
+          </div>
+        </div>
+      <% }) %>
+    </div>
+  </div>
+  <% } %>
+
+  <% if(related && related.length) { %>
+  <div style="margin-top:72px;">
+    <div class="section-title reveal"><h2>Related Products</h2></div>
+    <div class="products-grid">
+      <% related.forEach((p,i) => { %><%- include('../partials/product-card',{product:p,delay:i}) %><% }) %>
+    </div>
+  </div>
+  <% } %>
+</div>
+
+
+
+<%- include('../partials/footer') %>
+
+<script>
+// CSP SAFE SCRIPT: Event listeners are attached here instead of HTML attributes
+document.addEventListener('DOMContentLoaded', () => {
+
+  // --- IMAGE GALLERY & SWIPE LOGIC ---
+  let currentImgIndex = 0;
+  const swipeContainer = document.getElementById('swipeContainer');
+  const track = document.getElementById('galleryTrack');
+
+  function getThumbEls() {
+    return Array.from(document.querySelectorAll('.thumb-img'));
+  }
+  function getCarouselImgs() {
+    return track ? Array.from(track.querySelectorAll('.product-carousel-img')) : [];
+  }
+
+  function ensurePlaceholderIfEmpty() {
+    const imgs = getCarouselImgs();
+    if (imgs.length > 0) return;
+    if (!swipeContainer) return;
+    swipeContainer.innerHTML = `
+      <div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:var(--beige-dark);color:var(--text-muted);font-family:'Cinzel',serif;letter-spacing:.08em;">
+        NO IMAGE
+      </div>
+    `;
+    // also remove thumbs row if it exists
+    document.querySelector('.thumb-imgs')?.remove();
+  }
+
+  function reindexAll() {
+    const thumbs = getThumbEls();
+    const imgs = getCarouselImgs();
+    thumbs.forEach((t, i) => t.setAttribute('data-index', String(i)));
+    imgs.forEach((img, i) => img.setAttribute('data-index', String(i)));
+    if (currentImgIndex >= imgs.length) currentImgIndex = Math.max(0, imgs.length - 1);
+  }
+
+  function setActiveThumb(index) {
+    currentImgIndex = index;
+    const thumbs = getThumbEls();
+    thumbs.forEach((t, i) => t.classList.toggle('active', i === currentImgIndex));
+  }
+
+  function setActiveMain(index) {
+    const imgs = getCarouselImgs();
+    if (!imgs.length) return;
+    imgs.forEach((img, i) => img.classList.toggle('active', i === index));
+  }
+
+  function scrollToImg(index) {
+    const imgs = getCarouselImgs();
+    if (!track || !imgs.length) return;
+    const el = imgs[index];
+    if (!el) return;
+    track.scrollTo({ left: el.offsetLeft, behavior: 'smooth' });
+    setActiveThumb(index);
+    setActiveMain(index);
+  }
+
+  // Thumbnails click binding
+  getThumbEls().forEach(thumb => {
+    thumb.addEventListener('click', function() {
+      scrollToImg(parseInt(this.getAttribute('data-index')));
+    });
+  });
+
+  // Update active thumb on scroll (mobile swipe)
+  if (track && getCarouselImgs().length > 1) {
+    // Ensure first image is visible on desktop too
+    setActiveMain(0);
+
+    let raf = null;
+    track.addEventListener('scroll', () => {
+      if (raf) return;
+      raf = requestAnimationFrame(() => {
+        raf = null;
+        const imgs = getCarouselImgs();
+        if (!imgs.length) return;
+        const left = track.scrollLeft;
+        // nearest by distance to left edge
+        let bestIdx = 0;
+        let bestDist = Infinity;
+        imgs.forEach((img, idx) => {
+          const d = Math.abs(img.offsetLeft - left);
+          if (d < bestDist) { bestDist = d; bestIdx = idx; }
+        });
+        setActiveThumb(bestIdx);
+        setActiveMain(bestIdx);
+      });
+    }, { passive: true });
+  }
+
+  // Remove broken images (prevents blank slots)
+  if (track) {
+    track.addEventListener('error', (e) => {
+      const t = e.target;
+      if (!(t instanceof HTMLImageElement)) return;
+      if (!t.classList.contains('product-carousel-img')) return;
+
+      const idx = parseInt(t.getAttribute('data-index') || '-1', 10);
+      // remove slide image
+      t.remove();
+      // remove matching thumb
+      const thumb = document.querySelector(`.thumb-img[data-index="${idx}"]`);
+      if (thumb) thumb.remove();
+
+      reindexAll();
+      ensurePlaceholderIfEmpty();
+      setActiveMain(currentImgIndex);
+      setActiveThumb(currentImgIndex);
+    }, true);
+  }
+
+  // initial cleanup (in case 1st image already missing)
+  ensurePlaceholderIfEmpty();
+
+  // --- QTY BUTTONS ---
+  function changeQty(d){
+    const q=document.getElementById('qty');
+    if(!q) return;
+    q.value=Math.min(Number(q.max)||10,Math.max(1,(parseInt(q.value)||1)+d));
+    q.dispatchEvent(new Event('input',{bubbles:true}));
+  }
+  
+  const btnMinus = document.getElementById('btnQtyMinus');
+  const btnPlus = document.getElementById('btnQtyPlus');
+  if(btnMinus) btnMinus.addEventListener('click', () => changeQty(-1));
+  if(btnPlus) btnPlus.addEventListener('click', () => changeQty(1));
+
+  // --- REVIEW SYSTEM ---
+  function setRating(n){
+    const ratingInput = document.getElementById('ratingVal');
+    if(!ratingInput) return; // Prevent crash if user is not logged in
+
+    ratingInput.value=n;
+    const stars=document.querySelectorAll('#starRating span');
+    stars.forEach((s,i)=>{ s.textContent=i<n?'★':'☆'; s.style.color=i<n?'var(--warning)':'var(--text-muted)'; });
+  }
+
+  document.querySelectorAll('#starRating span').forEach(star => {
+    star.addEventListener('click', function() {
+      setRating(parseInt(this.getAttribute('data-rating')));
+    });
+  });
+
+  const submitReviewBtn = document.getElementById('submitReviewBtn');
+  if(submitReviewBtn) {
+    submitReviewBtn.addEventListener('click', function() {
+      const pid = this.getAttribute('data-product-id');
+      const rating = document.getElementById('ratingVal').value;
+      const title = document.getElementById('reviewTitle').value;
+      const review = document.getElementById('reviewText').value.trim();
+      
+      if(!review){ showToast('Please write a review.'); return; }
+      
+      fetch('/reviews/add', {
+        method:'POST', 
+        headers:{'Content-Type':'application/json'}, 
+        body:JSON.stringify({productId:pid, rating, title, review})
+      })
+      .then(r=>r.json())
+      .then(d=>{
+        if(d.success){
+          showToast('✦ '+d.message);
+          document.getElementById('reviewText').value='';
+          document.getElementById('reviewTitle').value='';
+        } else {
+          showToast(d.message);
+        }
+      });
+    });
+  }
+
+  // Initialize rating if the element exists
+  setRating(5);
+});
+
+// --- IMAGE ZOOM (Desktop: hover-to-zoom, Mobile: tap to fullscreen) ---
+(function() {
+  const container = document.getElementById('swipeContainer');
+  if (!container) return;
+  const isMobile = window.innerWidth < 769;
+
+  if (!isMobile) {
+    // Desktop: move mouse over image to zoom into that point
+    container.addEventListener('mousemove', function(e) {
+      const rect = container.getBoundingClientRect();
+      const x = ((e.clientX - rect.left) / rect.width * 100).toFixed(1) + '%';
+      const y = ((e.clientY - rect.top) / rect.height * 100).toFixed(1) + '%';
+      container.style.setProperty('--zoom-x', x);
+      container.style.setProperty('--zoom-y', y);
+      container.classList.add('zoom-lens-active');
+    });
+    container.addEventListener('mouseleave', function() {
+      container.classList.remove('zoom-lens-active');
+    });
+  } else {
+    // Mobile: tap image to open fullscreen lightbox
+    container.addEventListener('click', function() {
+      const activeImg = container.querySelector('.product-carousel-img.active') || container.querySelector('img');
+      if (!activeImg) return;
+      const overlay = document.createElement('div');
+      overlay.style.cssText = 'position:fixed;inset:0;z-index:100000;background:rgba(0,0,0,0.95);display:flex;align-items:center;justify-content:center;padding:16px;';
+      const zoomImg=document.createElement('img');zoomImg.src=activeImg.currentSrc||activeImg.src;zoomImg.alt=activeImg.alt;zoomImg.style.cssText='max-width:100%;max-height:90vh;object-fit:contain';const close=document.createElement('button');close.id='closeZoom';close.textContent='✕';close.setAttribute('aria-label','Close image');close.style.cssText='position:absolute;top:16px;right:16px;width:44px;height:44px';overlay.append(zoomImg,close);
+      document.body.appendChild(overlay);
+      document.body.style.overflow = 'hidden';
+      overlay.addEventListener('click', function(e) {
+        if (e.target === overlay || e.target.id === 'closeZoom') {
+          overlay.remove();
+          document.body.style.overflow = '';
+        }
+      });
+    });
+  }
+})();
+</script>
+</body></html>

@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8">
+<!-- Favicon -->
+<link rel="icon" type="image/png" sizes="32x32" href="/images/logo/favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/images/logo/favicon-16.png">
+<link rel="shortcut icon" href="/images/logo/favicon.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/images/logo/apple-touch-icon.png"><meta name="viewport" content="width=device-width,initial-scale=1"><title><%= pageTitle %></title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Cormorant+Garamond:wght@300;400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/style.css?v=a4c169302152"></head>
+<body class="admin-body"><%- include('../../partials/admin-nav') %>
+<div class="admin-wrap">
+  <%if(success&&success.length){%><div class="alert alert-success">✓ <%=success[0]%></div><%}%>
+  <div style="display:grid;grid-template-columns:1fr 380px;gap:28px;align-items:start;">
+    <div>
+      <h2 style="font-family:'Cinzel',serif;color:var(--lavender-light);margin-bottom:18px;">Festival Offers</h2>
+      <% if(!offers.length){%><div class="empty-state"><div class="empty-icon">🎊</div><h3>No offers</h3><p style="color:var(--text-muted)">Add your first festival offer!</p></div><%}%>
+      <% offers.forEach(o=>{ %>
+      <div class="form-section" style="margin-bottom:16px;">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:10px;">
+          <div>
+            <div style="font-family:'Cinzel',serif;font-size:1rem;color:var(--silver);margin-bottom:4px;"><%= o.title %></div>
+            <% if(o.coupon_code){%><div style="color:var(--lavender);font-size:.82rem;">Code: <strong><%= o.coupon_code %></strong></div><%}%>
+            <% if(o.discount>0){%><div style="color:var(--success);font-size:.82rem;"><%= o.discount %>% OFF</div><%}%>
+            <div style="color:var(--text-muted);font-size:.78rem;margin-top:4px;">
+              <% if(o.starts_at){%>From: <%= new Date(o.starts_at).toLocaleDateString('en-IN') %> <%}%>
+              <% if(o.ends_at){%>To: <%= new Date(o.ends_at).toLocaleDateString('en-IN') %><%}%>
+            </div>
+          </div>
+          <div style="display:flex;gap:8px;align-items:center;">
+            <span style="font-size:.72rem;padding:3px 10px;border-radius:12px;background:<%= o.is_active?'rgba(76,175,125,.15)':'rgba(224,82,82,.15)' %>;color:<%= o.is_active?'#4caf7d':'#e05252' %>;border:1px solid <%= o.is_active?'rgba(76,175,125,.3)':'rgba(224,82,82,.3)' %>"><%= o.is_active?'Active':'Inactive' %></span>
+            <form method="POST" action="/admin/offers/<%= o.id %>?_method=DELETE" onsubmit="return confirm('Delete?')">
+              <button type="submit" class="btn-danger btn-sm">Delete</button>
+            </form>
+          </div>
+        </div>
+      </div>
+      <% }) %>
+    </div>
+    <div class="form-section">
+      <h3>Add Festival Offer</h3>
+      <form method="POST" action="/admin/offers">
+        <div class="form-group"><label>Offer Title *</label><input type="text" name="title" required placeholder="Diwali Special Sale"></div>
+        <div class="form-group"><label>Description</label><textarea name="description" rows="2" placeholder="Sab products pe special discount..."></textarea></div>
+        <div class="form-group"><label>Discount %</label><input type="number" name="discount" value="0" min="0" max="100"></div>
+        <div class="form-group"><label>Coupon Code (optional)</label><input type="text" name="coupon_code" placeholder="DIWALI20"></div>
+        <div class="form-row">
+          <div class="form-group"><label>Start Date</label><input type="datetime-local" name="starts_at"></div>
+          <div class="form-group"><label>End Date</label><input type="datetime-local" name="ends_at"></div>
+        </div>
+        <button type="submit" class="btn-primary" style="width:100%;">Create Offer 🎊</button>
+      </form>
+    </div>
+  </div>
+</div>
+<script src="/js/main.js?v=2e61b06716d2"></script></body></html>

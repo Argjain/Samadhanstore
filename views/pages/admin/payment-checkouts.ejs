@@ -1,0 +1,7 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Payment Checkouts</title><link rel="stylesheet" href="/css/style.css?v=a4c169302152"></head>
+<body class="admin-body"><%- include('../../partials/admin-nav') %><main class="admin-wrap">
+<h1>Payment checkouts</h1><p>Pending checkouts reserve stock for 30 minutes. Captured payments are recovered automatically. Review cases need a stock check or a refund through Razorpay; do not ask the customer to pay again.</p>
+<% if(success&&success.length){ %><p role="status"><%=success[0]%></p><% } %><% if(error&&error.length){ %><p role="alert"><%=error[0]%></p><% } %>
+<div style="overflow:auto"><table class="admin-table"><thead><tr><th>Created</th><th>Status</th><th>Gateway order / payment</th><th>Store order</th><th>Notifications</th><th>Action</th></tr></thead><tbody>
+<% checkouts.forEach(c=>{ %><tr><td><%=new Date(c.created_at).toLocaleString('en-IN')%></td><td><%=c.status%><br><%=c.last_error||''%></td><td><%=c.gateway_order_id||''%><br><%=c.payment_id||''%></td><td><%=c.order_id||'—'%></td><td>Email: <%=c.email_notified?'sent':'pending'%><br>SMS: <%=c.sms_notified?'sent':'pending'%></td><td><form method="post" action="/admin/payment-checkouts/<%=c.id%>/recheck"><button class="btn-outline" type="submit">Check payment</button></form></td></tr><% }) %>
+</tbody></table></div></main></body></html>

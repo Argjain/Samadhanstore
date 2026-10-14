@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/logo/favicon-32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/logo/favicon-16.png">
+  <link rel="shortcut icon" href="/images/logo/favicon.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/logo/apple-touch-icon.png">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title><%= pageTitle %></title>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css?v=a4c169302152">
+  
+  <!-- ✅ RAZORPAY SCRIPT -->
+  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+</head>
+<body data-loggedin="<%= currentUser?'true':'false' %>">
+<div class="particles" id="particles"></div>
+<%- include('../partials/navbar') %>
+
+<div class="page-wrap">
+  <div class="breadcrumb"><a href="/">Home</a><span>›</span><a href="/cart">Cart</a><span>›</span><span>Checkout</span></div>
+  <h1 style="font-family:'Cinzel',serif;font-size:2rem;color:var(--silver);margin-bottom:32px;">Checkout</h1>
+
+  <div class="checkout-grid">
+    <div>
+      <div class="form-section reveal">
+        <h3>📦 Delivery Details</h3>
+        <div class="form-row">
+          <div class="form-group"><label>Full Name *</label><input type="text" id="f_name" placeholder="Your full name" required value="<%= user?user.name:'' %>"></div>
+          <div class="form-group"><label>Phone *</label><input type="tel" id="f_phone" placeholder="10 digit mobile number" required pattern="[0-9]{10}" minlength="10" maxlength="10" title="10 digit mobile number" value="<%= user&&user.phone?user.phone.replace(/[^0-9]/g,'').slice(-10):'' %>"></div>
+        </div>
+        <div class="form-group"><label>Email *</label><input type="email" id="f_email" placeholder="aap@email.com" required value="<%= user?user.email:'' %>"></div>
+        <div class="form-group"><label>Full Address *</label><textarea id="f_address" rows="2" placeholder="House no., Street, Area..." required></textarea></div>
+        <div class="form-row">
+          <div class="form-group"><label>City *</label><input type="text" id="f_city" placeholder="City" required></div>
+          <div class="form-group"><label>State *</label>
+            <select id="f_state" required>
+              <option value="">Select State</option>
+              <% states.forEach(s=>{%><option value="<%= s %>"><%= s %></option><%})%>
+            </select>
+          </div>
+        </div>
+        <div class="form-group" style="max-width:180px;"><label>PIN Code *</label><input type="text" id="f_pincode" placeholder="110001" pattern="[0-9]{6}" minlength="6" maxlength="6" title="6 digit pincode" required></div>
+        <div class="cod-msg" id="codMsg"></div>
+      </div>
+
+      <div class="form-section reveal">
+        <h3>💳 Payment Method</h3>
+        <div class="payment-method selected" id="pm-online" data-method="online">
+          <input type="radio" name="pm" value="online" checked>
+          <div class="payment-method-label">
+            <div class="payment-method-title">Online Payment (Razorpay)</div>
+            <div class="payment-method-desc">UPI, Cards, Net Banking</div>
+          </div>
+          <span class="online-discount-badge"><%= onlineDiscountPct %>% OFF</span>
+          <span style="font-size:1.2rem;margin-left:8px;">💳</span>
+        </div>
+        <div class="payment-method" id="pm-cod" data-method="cod">
+          <input type="radio" name="pm" value="cod">
+          <div class="payment-method-label">
+            <div class="payment-method-title">Cash on Delivery</div>
+            <div class="payment-method-desc" id="codDesc">Enter city/pincode to check availability</div>
+          </div>
+          <span style="font-size:1.2rem;margin-left:auto;">💵</span>
+        </div>
+        <div class="alert alert-info" style="margin-top:12px;font-size:.85rem;">🏠 COD is only available for a few select pincodes</div>
+      </div>
+    </div>
+
+    <div class="cart-summary reveal" style="position:sticky;top:100px;">
+      <h3>Order Summary</h3>
+      <% Object.values(cart).forEach(item => { %>
+      <div style="display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid rgba(139,127,212,.08);">
+        <div><div style="font-family:'Cinzel',serif;font-size:.85rem;"><%= item.name %></div><div style="color:var(--text-muted);font-size:.78rem;">Qty: <%= item.qty %></div></div>
+        <span style="color:var(--lavender-light);"><%= business.currencySymbol %><%= Number(item.line_total).toLocaleString('en-IN') %></span>
+      </div>
+      <% }) %>
+      <div class="summary-row" style="margin-top:12px;"><span>Subtotal</span><span><%= business.currencySymbol %><%= Number(subtotal).toLocaleString('en-IN') %></span></div>
+      <% if(discount>0){%><div class="summary-row discount"><span>Coupon (<%= coupon %>)</span><span>−<%= business.currencySymbol %><%= discount %></span></div><%}%>
+      <div class="summary-row" id="onlineDiscRow"><span>Online Discount (<%= onlineDiscountPct %>%)</span><span style="color:var(--success)">−<%= business.currencySymbol %><%= onlineDiscount %></span></div>
+      
+      <div class="summary-row">
+        <span>Shipping</span>
+        <span>
+          <% if (String(shipping).includes('span') || String(shipping).includes('Free') || shipping == 0) { %>
+            <span style="color: #28a745; font-weight: 600;">Free</span>
+          <% } else { %>
+            <%= business.currencySymbol %><%= shipping %>
+          <% } %>
+        </span>
+      </div>
+
+      <% if(gst>0){ %><div class="summary-row"><span>GST</span><span>₹<%=gst%></span></div><% } %>
+      <div class="summary-row total"><span>Total</span><span id="finalTotal"><%= business.currencySymbol %><%= Number(onlineTotal).toLocaleString('en-IN') %></span></div>
+      
+      <button id="placeBtn" class="btn-primary" style="width:100%;margin-top:18px;">
+        Place Order – <%= business.currencySymbol %><span id="btnTotal"><%= Number(onlineTotal).toLocaleString('en-IN') %></span>
+      </button>
+      
+      <div style="text-align:center;margin-top:10px;color:var(--text-muted);font-size:.78rem;">🔒 Secure & Safe Checkout powered by Razorpay</div>
+    </div>
+  </div>
+</div>
+
+<!-- COD Form -->
+<form id="codForm" method="POST" action="/orders/place-cod" style="display:none;">
+  <input type="hidden" name="checkoutToken" value="<%=checkoutToken%>">
+  <input type="hidden" name="expectedTotal" value="<%=total%>">
+  <input type="hidden" name="isBuyNow" value="<%= typeof isBuyNow !== 'undefined' && isBuyNow ? 'true' : 'false' %>">
+  <input type="hidden" name="name" id="hName"><input type="hidden" name="email" id="hEmail">
+  <input type="hidden" name="phone" id="hPhone"><input type="hidden" name="address" id="hAddress">
+  <input type="hidden" name="city" id="hCity"><input type="hidden" name="state" id="hState">
+  <input type="hidden" name="pincode" id="hPincode">
+</form>
+
+<!-- ✅ RAZORPAY FORM -->
+<form id="razorpayForm" method="POST" action="/orders/place-online" style="display:none;">
+  <input type="hidden" name="checkoutToken" value="<%=checkoutToken%>">
+  <input type="hidden" name="isBuyNow" value="<%= typeof isBuyNow !== 'undefined' && isBuyNow ? 'true' : 'false' %>">
+  <input type="hidden" name="name" id="rName"><input type="hidden" name="email" id="rEmail">
+  <input type="hidden" name="phone" id="rPhone"><input type="hidden" name="address" id="rAddress">
+  <input type="hidden" name="city" id="rCity"><input type="hidden" name="state" id="rState">
+  <input type="hidden" name="pincode" id="rPincode">
+  <input type="hidden" name="razorpay_payment_id" id="rzp_payment_id">
+  <input type="hidden" name="razorpay_order_id" id="rzp_order_id">
+  <input type="hidden" name="razorpay_signature" id="rzp_signature">
+</form>
+
+<%- include('../partials/footer') %>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  let selectedPM='online', codAvailable=false;
+  const onlineDiscount=<%=onlineDiscount%>, codTotal=<%=total%>, onlineTotal=<%=onlineTotal%>;
+  const checkoutToken='<%=checkoutToken%>', isBuyNow=<%=isBuyNow?'true':'false'%>;
+
+  function selectPM(method, el){
+    selectedPM=method;
+    document.querySelectorAll('.payment-method').forEach(m=>m.classList.remove('selected'));
+    el.classList.add('selected');
+    const disc=method==='online'?onlineDiscount:0;
+    
+    const total=method==='online'?onlineTotal:codTotal;
+    document.getElementById('finalTotal').textContent='₹'+total.toLocaleString('en-IN');
+    document.getElementById('btnTotal').textContent=total.toLocaleString('en-IN');
+    document.getElementById('onlineDiscRow').style.display=method==='online'?'flex':'none';
+    const radio = el.querySelector('input[type="radio"]');
+    if(radio) radio.checked = true;
+  }
+
+  document.querySelectorAll('.payment-method').forEach(methodDiv => {
+    methodDiv.addEventListener('click', function() { selectPM(this.getAttribute('data-method'), this); });
+  });
+
+  let codTimer;
+  function checkCOD(){
+    clearTimeout(codTimer);
+    codTimer=setTimeout(async ()=>{
+      const city=document.getElementById('f_city').value;
+      const pin=document.getElementById('f_pincode').value;
+      if(!city&&pin.length<6) return;
+      try {
+        const r=await fetch('/api/check-cod',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({city,pincode:pin})});
+        const d=await r.json();
+        codAvailable=d.available;
+        const msg=document.getElementById('codMsg');
+        const codDesc=document.getElementById('codDesc');
+        if (msg) {
+          msg.className='cod-msg '+(d.available?'cod-available':'cod-unavailable');
+          msg.style.display='block'; msg.textContent=d.message;
+        }
+        if (codDesc) codDesc.textContent=d.available?'Available at your location ✅':'Not available at your pincode ❌';
+      } catch(e) {}
+    },600);
+  }
+
+  document.getElementById('f_city')?.addEventListener('input', checkCOD);
+  document.getElementById('f_pincode')?.addEventListener('input', checkCOD);
+
+  // ✅ MAIN CHECKOUT LOGIC
+  async function placeOrder(){
+    const fields={name:'f_name',email:'f_email',phone:'f_phone',address:'f_address',city:'f_city',state:'f_state',pincode:'f_pincode'};
+    const vals={};
+    
+    for(const [k,id] of Object.entries(fields)){
+      vals[k]=document.getElementById(id).value.trim();
+      if(!vals[k]){
+        document.getElementById(id).style.borderColor='var(--error)';
+        alert('⚠ Please fill all fields.'); return;
+      }
+      document.getElementById(id).style.borderColor='';
+    }
+
+    // Data validation
+    const phoneClean = vals.phone.replace(/[^0-9]/g,'');
+    if(phoneClean.length !== 10) { document.getElementById('f_phone').style.borderColor='var(--error)'; alert('⚠ Phone number must be exactly 10 digits.'); return; }
+    vals.phone = phoneClean;
+
+    if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(vals.email)) { document.getElementById('f_email').style.borderColor='var(--error)'; alert('⚠ Please enter a valid email address.'); return; }
+
+    if(!/^\d{6}$/.test(vals.pincode)) { document.getElementById('f_pincode').style.borderColor='var(--error)'; alert('⚠ Pincode must be exactly 6 digits.'); return; }
+
+    if(vals.name.length < 2) { document.getElementById('f_name').style.borderColor='var(--error)'; alert('⚠ Please enter your full name.'); return; }
+
+    if(vals.address.length < 10) { document.getElementById('f_address').style.borderColor='var(--error)'; alert('⚠ Please enter complete address.'); return; }
+
+    const placeBtn = document.getElementById('placeBtn');
+    placeBtn.disabled = true;
+    placeBtn.textContent = 'Processing...';
+
+    // ---- COD FLOW ----
+    if(selectedPM==='cod'){
+      try {
+        const r = await fetch('/api/check-cod', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({city:vals.city, pincode:vals.pincode})});
+        const d = await r.json();
+        if(!d.available) { alert('❌ COD is only available for select pincodes.'); placeBtn.disabled=false; placeBtn.textContent='Place Order'; return; }
+        
+        Object.entries(vals).forEach(([k,v])=>{ document.getElementById('h'+k.charAt(0).toUpperCase()+k.slice(1)).value=v; });
+        document.getElementById('codForm').submit();
+      } catch(e) { alert('Error verifying location.'); placeBtn.disabled=false; placeBtn.textContent='Place Order'; }
+    } 
+    // ---- RAZORPAY ONLINE FLOW ----
+    else {
+      try {
+        const res = await fetch('/orders/razorpay-initiate', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ...vals, isBuyNow, checkoutToken, expectedTotal:onlineTotal })
+        });
+        const data = await res.json();
+        
+        if(data.redirect) { location.assign(data.redirect); return; }
+        if(!data.success) { alert(data.message || "Failed to initiate payment"); placeBtn.disabled=false; placeBtn.textContent='Place Order'; return; }
+
+        var options = {
+          "key": "<%= config.razorpay.keyId %>",
+          "amount": data.order.amount,
+          "currency": "INR",
+          "name": "SAMADHAN",
+          "description": "Wear The Universe",
+          "image": "/images/logo/logo-sm.png",
+          "order_id": data.order.id,
+          "handler": function (response) {
+             document.getElementById('rzp_payment_id').value = response.razorpay_payment_id;
+             document.getElementById('rzp_order_id').value = response.razorpay_order_id;
+             document.getElementById('rzp_signature').value = response.razorpay_signature;
+
+             Object.entries(vals).forEach(([k,v])=>{ document.getElementById('r'+k.charAt(0).toUpperCase()+k.slice(1)).value=v; });
+             document.getElementById('razorpayForm').submit();
+          },
+          "prefill": { "name": vals.name, "email": vals.email, "contact": vals.phone },
+          "theme": { "color": "#1a1a2e" },
+          "modal": { "ondismiss": function(){placeBtn.disabled=false;placeBtn.textContent="Place Order";} }
+        };
+
+        var rzp1 = new Razorpay(options);
+        rzp1.on('payment.failed', function (response){
+          alert("Payment Failed: " + response.error.description);
+          placeBtn.disabled=false; placeBtn.textContent='Place Order';
+        });
+        rzp1.open();
+
+      } catch (err) {
+        alert('Server Error. Try again later.');
+        placeBtn.disabled=false; placeBtn.textContent='Place Order';
+      }
+    }
+  }
+
+  document.getElementById('placeBtn')?.addEventListener('click', placeOrder);
+});
+</script>
+</body></html>

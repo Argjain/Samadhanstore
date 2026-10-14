@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" sizes="32x32" href="/images/logo/favicon-32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/images/logo/favicon-16.png">
+    <link rel="shortcut icon" href="/images/logo/favicon.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/images/logo/apple-touch-icon.png">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title><%= pageTitle %></title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/style.css?v=a4c169302152">
+    <style>
+        /* Extra contrast for the details box */
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            padding-bottom: 8px;
+        }
+        .summary-row:last-child { border-bottom: none; }
+        
+        .detail-label { color: rgba(255,255,255,0.7) !important; font-size: 0.9rem; }
+        .detail-value { color: #ffffff !important; font-weight: 600; text-align: right; }
+    </style>
+</head>
+<body data-loggedin="<%= currentUser?'true':'false' %>">
+    <div class="particles" id="particles"></div>
+    <%- include('../partials/navbar') %>
+
+    <div class="page-wrap" style="max-width:600px; text-align:center; padding: 60px 20px;">
+        <div style="font-size:4rem; margin-bottom:20px; animation:fadeUp .8s ease both;">🎉</div>
+        
+        <h1 style="font-family:'Cinzel',serif; font-size:2.2rem; color:var(--silver); margin-bottom:10px;">Order Confirmed!</h1>
+        
+        <p style="color:var(--text-muted); margin-bottom:6px;">Order ID: <strong style="color:var(--lavender-light);"><%= order.order_id %></strong></p>
+        <p style="color:var(--text-muted); margin-bottom:6px;">Thank you, <strong><%= order.name %></strong>! 🙏</p>
+        <p style="color:var(--text-muted); margin-bottom:32px;">Your order is saved. Keep your order number and use the tracking link below.</p>
+
+        <!-- Details Box with better contrast -->
+        <div style="background:rgba(26,16,64,0.8); border:1px solid rgba(255,255,255,0.1); border-radius:var(--radius); padding:24px; margin-bottom:32px; box-shadow: 0 10px 30px rgba(0,0,0,0.3);">
+            
+            <div class="summary-row">
+                <span class="detail-label">Total</span>
+                <span class="detail-value" style="font-family:'Cinzel',serif; font-size: 1.1rem; color: var(--silver) !important;">
+                    <%= business.currencySymbol %><%= Number(order.total).toLocaleString('en-IN') %>
+                </span>
+            </div>
+
+            <div class="summary-row">
+                <span class="detail-label">Payment</span>
+                <span class="detail-value">
+                    <%= order.payment_status==='paid' ? '✅ Paid' : '💵 Cash on Delivery' %>
+                </span>
+            </div>
+
+            <div class="summary-row">
+                <span class="detail-label">Estimated Delivery</span>
+                <span class="detail-value">3-5 Business Days</span>
+            </div>
+
+            <div class="summary-row">
+                <span class="detail-label">Delivery To</span>
+                <span class="detail-value" style="font-size:0.88rem;">
+                    <%= order.city %>, <%= order.state %> - <%= order.pincode %>
+                </span>
+            </div>
+            
+        </div>
+
+        <div style="display:flex; gap:12px; justify-content:center; flex-wrap:wrap;">
+            <a href="/orders/track/<%= order.order_id %>" class="btn-outline">Track Order</a>
+            <a href="/shop" class="btn-primary">Continue Shopping</a>
+        </div>
+    </div>
+
+    <%- include('../partials/footer') %>
+</body>
+</html>

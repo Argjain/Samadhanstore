@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8">
+<link rel="icon" type="image/png" sizes="32x32" href="/images/logo/favicon-32.png">
+<link rel="shortcut icon" href="/images/logo/favicon.png">
+<meta name="viewport" content="width=device-width,initial-scale=1"><title><%= pageTitle %></title>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/style.css?v=a4c169302152"></head>
+<body class="admin-body"><%- include('../../partials/admin-nav') %>
+<div class="admin-wrap">
+  <%if(success&&success.length){%><div class="alert alert-success">✓ <%=success[0]%></div><%}%>
+  <%if(error&&error.length){%><div class="alert alert-error">⚠ <%=error[0]%></div><%}%>
+
+  <div style="display:grid;grid-template-columns:1fr 420px;gap:28px;align-items:start;">
+    <!-- Blog list -->
+    <div>
+      <h2 style="font-family:'Roboto',sans-serif;font-weight:700;color:var(--lavender-light);margin-bottom:18px;">Blog Posts (<%= posts.length %>)</h2>
+      <% if(!posts.length) { %>
+        <div class="empty-state"><div class="empty-icon">📝</div><h3>No blog posts</h3><p style="color:var(--text-muted)">Write your first post!</p></div>
+      <% } %>
+      <% posts.forEach(p => { %>
+        <div class="form-section" style="margin-bottom:14px;display:flex;gap:12px;align-items:flex-start;">
+          <% if(p.image) { %>
+            <img src="<%= p.image %>" style="width:60px;height:60px;object-fit:cover;border-radius:8px;flex-shrink:0;">
+          <% } else { %>
+            <div style="width:60px;height:60px;border-radius:8px;background:rgba(255,255,255,.06);display:flex;align-items:center;justify-content:center;font-size:1.3rem;flex-shrink:0;">📝</div>
+          <% } %>
+          <div style="flex:1;">
+            <div style="font-weight:600;color:var(--silver);margin-bottom:4px;"><%= p.title %></div>
+            <div style="font-size:.78rem;color:var(--text-muted);margin-bottom:6px;">
+              <%= new Date(p.created_at).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'}) %> •
+              <span style="color:<%= p.is_published?'var(--success)':'var(--error)' %>"><%= p.is_published?'Published':'Draft' %></span>
+            </div>
+            <div style="display:flex;gap:8px;">
+              <a href="/blog/<%= p.slug %>" target="_blank" class="btn-outline btn-sm">View</a>
+              <a href="/admin/blogs/<%= p.id %>/edit" class="btn-outline btn-sm">Edit</a>
+              <form method="POST" action="/admin/blogs/<%= p.id %>?_method=DELETE" onsubmit="return confirm('Delete this post?')" style="display:inline;">
+                <button type="submit" class="btn-danger btn-sm">Delete</button>
+              </form>
+            </div>
+          </div>
+        </div>
+      <% }) %>
+    </div>
+
+    <!-- Create form -->
+    <div class="form-section">
+      <h3>Write New Post</h3>
+      <form method="POST" action="/admin/blogs" enctype="multipart/form-data">
+        <div class="form-group"><label>Title *</label><input type="text" name="title" required placeholder="How to choose crystals by zodiac sign"></div>
+        <div class="form-group"><label>Featured Image</label><input type="file" name="image" accept="image/*"></div>
+        <div class="form-group"><label>Tags (comma separated)</label><input type="text" name="tags" placeholder="crystals, zodiac, healing"></div>
+        <div class="form-group"><label>Author</label><input type="text" name="author" value="Samadhan" placeholder="Author name"></div>
+        <div class="form-group">
+          <label>Content *</label>
+          <p style="font-size:.72rem;color:var(--text-muted);margin-bottom:8px;">HTML allowed: &lt;h2&gt;, &lt;p&gt;, &lt;b&gt;, &lt;ul&gt;&lt;li&gt;, &lt;img&gt;</p>
+          <textarea name="content" rows="12" required placeholder="Write your blog post here... HTML tags supported for formatting." style="font-family:monospace;font-size:.85rem;"></textarea>
+        </div>
+        <div class="form-group"><label>Excerpt (short description)</label><textarea name="excerpt" rows="2" placeholder="Brief summary for blog listing..."></textarea></div>
+        <div class="form-group" style="display:flex;align-items:center;gap:10px;">
+          <input type="checkbox" name="is_published" id="blog_pub" checked>
+          <label for="blog_pub" style="margin:0;cursor:pointer;">Publish immediately</label>
+        </div>
+        <button type="submit" class="btn-primary" style="width:100%;">Publish Post 📝</button>
+      </form>
+    </div>
+  </div>
+</div>
+<script src="/js/main.js?v=2e61b06716d2"></script></body></html>

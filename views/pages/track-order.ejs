@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8">
+<!-- Favicon -->
+<link rel="icon" type="image/png" sizes="32x32" href="/images/logo/favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/images/logo/favicon-16.png">
+<link rel="shortcut icon" href="/images/logo/favicon.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/images/logo/apple-touch-icon.png"><meta name="viewport" content="width=device-width,initial-scale=1"><title><%= pageTitle %></title><link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&display=swap" rel="stylesheet"><link rel="stylesheet" href="/css/style.css?v=a4c169302152"></head>
+<body data-loggedin="<%= currentUser?'true':'false' %>"><div class="particles" id="particles"></div><%- include('../partials/navbar') %>
+<div class="page-wrap" style="max-width:800px;">
+  <div class="breadcrumb"><a href="/">Home</a><span>›</span><a href="/account">Account</a><span>›</span><span>Track Order</span></div>
+  <h1 style="font-family:'Cinzel',serif;font-size:1.8rem;color:var(--silver);margin-bottom:8px;">Order Tracking</h1>
+  <p style="color:var(--text-muted);margin-bottom:32px;">Order ID: <strong style="color:var(--lavender-light);"><%= order.order_id %></strong></p>
+
+  <div class="form-section reveal" style="margin-bottom:28px;">
+    <% if(order.order_status==='cancelled'){ %><p role="status">This order has been cancelled. Contact support for payment or refund questions.</p><% } %>
+    <div class="tracking-steps">
+      <% const stepLabels={placed:'Order Placed',confirmed:'Confirmed',processing:'Processing',shipped:'Shipped',out_for_delivery:'Out for Delivery',delivered:'Delivered'};
+      steps.forEach((step,i) => { %>
+      <div class="tracking-step <%= i<=currentStep?'done':'' %> <%= i===currentStep?'current':'' %>">
+        <div class="step-dot"><%= i<currentStep?'✓':i===currentStep?'●':'○' %></div>
+        <div class="step-label"><%= stepLabels[step]||step %></div>
+      </div>
+      <% }) %>
+    </div>
+    <% if(order.tracking_id) { %>
+    <div class="alert alert-info" style="margin-top:20px;">📦 Tracking ID: <strong><%= order.tracking_id %></strong></div>
+    <% } %>
+  </div>
+
+  <div class="form-section reveal">
+    <h3>Delivery Address</h3>
+    <p style="color:var(--text-muted);"><%= order.name %><br><%= order.address %>, <%= order.city %>, <%= order.state %> - <%= order.pincode %><br>📞 <%= order.phone %></p>
+  </div>
+  <div class="form-section reveal">
+    <h3>Order Items</h3>
+    <% order.items.forEach(item => { %>
+    <div style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid rgba(139,127,212,.1);">
+      <span style="color:var(--text);"><%= item.name %> × <%= item.qty %></span>
+      <span style="color:var(--lavender-light);font-family:'Cinzel',serif;"><%= business.currencySymbol %><%= Number(item.price*item.qty).toLocaleString('en-IN') %></span>
+    </div>
+    <% }) %>
+    <div style="text-align:right;margin-top:12px;"><strong style="color:var(--lavender-light);font-family:'Cinzel',serif;">Total: <%= business.currencySymbol %><%= Number(order.total).toLocaleString('en-IN') %></strong></div>
+  </div>
+</div>
+<%- include('../partials/footer') %></body></html>

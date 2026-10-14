@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/logo/favicon-32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/logo/favicon-16.png">
+  <link rel="shortcut icon" href="/images/logo/favicon.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/logo/apple-touch-icon.png">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title><%= pageTitle %></title>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css?v=a4c169302152">
+</head>
+<body data-loggedin="false">
+  <div class="particles" id="particles"></div>
+  <%- include('../partials/navbar') %>
+
+  <div class="page-wrap" style="max-width: 850px; margin: 0 auto; padding-top: 130px; padding-bottom: 60px; color: var(--text);">
+    <h1 style="font-family: 'Cinzel', serif; color: var(--lavender-light); text-align: center; margin-bottom: 40px;">Terms & Conditions</h1>
+    
+    <div style="background: rgba(255,255,255,0.02); border: 1px solid var(--border); padding: 40px; border-radius: 12px; line-height: 1.8; font-size: 0.95rem;">
+      <p style="margin-bottom: 20px;">Welcome to <strong>Samadhan</strong>. By accessing our website and purchasing our products, you agree to be bound by the following Terms and Conditions.</p>
+
+      <h3 style="color: var(--silver); margin-top: 30px; margin-bottom: 15px; font-family: 'Cinzel', serif;">1. General Conditions</h3>
+      <p style="color: var(--text-muted); margin-bottom: 20px;">You may not use our products for any illegal or unauthorized purpose. By agreeing to these Terms, you represent that you are at least the age of majority in your state or province of residence.</p>
+
+      <h3 style="color: var(--silver); margin-top: 30px; margin-bottom: 15px; font-family: 'Cinzel', serif;">2. Products & Pricing</h3>
+      <p style="color: var(--text-muted); margin-bottom: 20px;">All descriptions of products or product pricing are subject to change at any time without notice, at our sole discretion. We have made every effort to display as accurately as possible the colors and images of our products.</p>
+
+      <h3 style="color: var(--silver); margin-top: 30px; margin-bottom: 15px; font-family: 'Cinzel', serif;">3. Accuracy of Billing and Account Information</h3>
+      <p style="color: var(--text-muted); margin-bottom: 20px;">We reserve the right to refuse any order you place with us. You agree to provide current, complete, and accurate purchase and account information for all purchases made at our store.</p>
+
+      <h3 style="color: var(--silver); margin-top: 30px; margin-bottom: 15px; font-family: 'Cinzel', serif;">4. Payment Terms</h3>
+      <p style="color: var(--text-muted); margin-bottom: 20px;">For online payments, we use secure third-party payment gateways. Cash on Delivery (COD) is available only in selected regions (e.g., select pincodes). We reserve the right to disable COD for specific users or areas.</p>
+
+      <h3 style="color: var(--silver); margin-top: 30px; margin-bottom: 15px; font-family: 'Cinzel', serif;">5. Governing Law</h3>
+      <p style="color: var(--text-muted); margin-bottom: 20px;">These Terms of Service and any separate agreements whereby we provide you services shall be governed by and construed in accordance with the laws of India.</p>
+
+      <h3 style="color: var(--silver); margin-top: 30px; margin-bottom: 15px; font-family: 'Cinzel', serif;">6. Contact Information</h3>
+      <p style="color: var(--text-muted); margin-bottom: 10px;">Questions about the Terms of Service should be sent to us at:</p>
+      <p style="color: var(--lavender-light);">
+        <strong>Email:</strong> support@samadhanstore.com<br>
+        <strong>Phone:</strong> +91-XXXXXXXXXX
+      </p>
+    </div>
+  </div>
+
+  <%- include('../partials/footer') %>
+</body>
+</html>

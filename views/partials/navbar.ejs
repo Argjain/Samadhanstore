@@ -1,0 +1,294 @@
+<style>
+/* --- 1. NAVBAR BASE --- */
+#customNavbar {
+  position: sticky !important;
+  top: 0;
+  width: 100% !important;
+  height: 60px !important;
+  background-color: #1a1a2e !important;
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  padding: 0 12px !important;
+  z-index: 100000 !important;
+  box-sizing: border-box !important;
+  border-bottom: 1px solid rgba(255,255,255,0.05) !important;
+}
+
+#customNavbar a { text-decoration: none !important; }
+
+/* Logo — mobile mein text hide karo overlap na ho */
+.nav-logo-text {
+  font-family:'Cinzel',serif; font-weight:bold; font-size:1rem;
+  margin-left:8px; color:#fff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 120px;
+}
+@media (min-width: 400px) { .nav-logo-text { max-width: 160px; font-size:1.1rem; } }
+@media (min-width: 600px) { .nav-logo-text { max-width: none; } }
+
+/* --- 2. MOBILE MENU --- */
+#customMobileMenu {
+  display: none !important; 
+  position: absolute !important;
+  top: 60px !important;
+  left: 0 !important;
+  width: 100% !important;
+  background-color: #1a1a2e !important;
+  opacity: 1 !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  list-style: none !important;
+  flex-direction: column !important;
+  box-shadow: 0 15px 30px rgba(0,0,0,0.8) !important;
+  z-index: 99999 !important;
+}
+
+#customMobileMenu.show-menu { display: flex !important; }
+
+#customMobileMenu li {
+  width: 100% !important;
+  background-color: #1a1a2e !important;
+  border-bottom: 1px solid rgba(255,255,255,0.08) !important;
+}
+
+#customMobileMenu li a {
+  display: block !important;
+  padding: 15px 20px !important;
+  color: #ffffff !important;
+  font-size: 1.1rem !important;
+  font-family: inherit !important;
+}
+
+/* --- 3. SEARCH DROPDOWN --- */
+#customSearchBox {
+  position: fixed !important;
+  top: 60px !important;
+  left: 0 !important;
+  width: 100% !important;
+  background-color: #1a1a2e !important;
+  opacity: 1 !important;
+  border-top: 1px solid rgba(255,255,255,0.1) !important;
+  box-shadow: 0 15px 30px rgba(0,0,0,0.8) !important;
+  display: none; 
+  z-index: 100001 !important;
+}
+
+#customSearchResults {
+  max-height: 320px !important;
+  overflow-y: auto !important;
+  background-color: #1a1a2e !important;
+}
+
+.new-search-item {
+  display: block !important;
+  border-bottom: 1px solid rgba(255,255,255,0.05) !important;
+  background-color: transparent !important;
+  transition: 0.2s ease !important;
+}
+
+.new-search-item a {
+  display: flex !important;
+  align-items: center !important;
+  padding: 10px 15px !important;
+  color: #ffffff !important;
+}
+
+.new-search-item a span, .new-search-item a div {
+  color: #ffffff !important; 
+}
+
+.new-search-item:hover {
+  background-color: #ffffff !important;
+}
+.new-search-item:hover a, 
+.new-search-item:hover a span, 
+.new-search-item:hover a div {
+  color: #1a1a2e !important;
+}
+
+.new-search-item img {
+  width: 45px !important;
+  height: 45px !important;
+  object-fit: cover !important;
+  border-radius: 4px !important;
+  margin-right: 12px !important;
+  border: 1px solid rgba(255,255,255,0.2) !important;
+  background: #fff !important;
+}
+
+#myUniqueSearchInput::placeholder {
+  color: #888 !important;
+  opacity: 1 !important;
+}
+#myUniqueSearchInput:focus {
+  border-color: rgba(255,255,255,0.5) !important;
+  box-shadow: 0 0 0 2px rgba(255,255,255,0.1) !important;
+}
+
+/* Hamburger UI */
+.custom-toggle { background: none; border: none; cursor: pointer; display: flex; flex-direction: column; gap: 5px; padding: 5px; }
+.custom-toggle span { display: block; width: 22px; height: 2px; background: #fff; border-radius: 2px; }
+
+/* --- 4. CART BADGE (Flipkart style) --- */
+.nav-cart-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+.nav-cart-badge {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background: #ffffff;
+  color: #1a1a2e;
+  font-size: 0.6rem;
+  font-weight: 700;
+  font-family: 'Cinzel', serif;
+  min-width: 18px;
+  height: 18px;
+  border-radius: 9px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 4px;
+  border: 2px solid #1a1a2e;
+  animation: badgePop 0.3s cubic-bezier(0.36,0.07,0.19,0.97);
+  z-index: 10;
+}
+@keyframes badgePop {
+  0%   { transform: scale(0); opacity: 0; }
+  60%  { transform: scale(1.3); opacity: 1; }
+  100% { transform: scale(1); }
+}
+
+/* PC specific */
+@media (min-width: 769px) {
+  #customNavbar { height: 65px !important; padding: 0 20px !important; }
+  #customMobileMenu { display: flex !important; position: static !important; flex-direction: row !important; box-shadow: none !important; border: none !important; width: auto !important; top: 0 !important; }
+  #customMobileMenu li { border: none !important; width: auto !important; }
+  .custom-toggle { display: none !important; }
+  #customSearchBox { top: 65px !important; }
+}
+
+/* --- 5. ANNOUNCEMENT BAR (horizontal CSS marquee, CSP-safe) --- */
+@keyframes marquee-scroll {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+.top-text-marquee-container {
+  overflow: hidden;
+  white-space: nowrap;
+  min-height: 35px;
+  display: flex;
+  align-items: center;
+  font-size: 0.85rem;
+}
+.top-text-marquee-track {
+  display: inline-flex;
+  flex-wrap: nowrap;
+  white-space: nowrap;
+  align-items: center;
+  animation: marquee-scroll 20s linear infinite;
+  will-change: transform;
+}
+.top-text-marquee-container:hover .top-text-marquee-track {
+  animation-play-state: paused;
+}
+.top-text-marquee-item {
+  display: inline-flex;
+  align-items: center;
+  padding: 8px 28px;
+}
+.top-text-marquee-item a {
+  color: inherit !important;
+  text-decoration: none !important;
+}
+</style>
+
+<% const textBanners = (typeof banners !== 'undefined' ? banners : []).filter(b => !b.image && b.text && b.text.trim() !== ''); %>
+<% if(textBanners && textBanners.length > 0){ %>
+<div id="top-text-banner-container" class="top-text-marquee-container" style="background:<%= textBanners[0].bg_color || '#2d1b69' %>; color:<%= textBanners[0].text_color || '#fff' %>;">
+  <div class="top-text-marquee-track">
+    <%# Duplicate the entry list once so the -50% translate loops seamlessly %>
+    <% for (let rep = 0; rep < 2; rep++) { %>
+      <% textBanners.forEach((b) => { %>
+        <span class="top-text-marquee-item" style="background:<%= b.bg_color || '#2d1b69' %>; color:<%= b.text_color || '#fff' %>;">
+          <% if(b.link) { %>
+            <a href="<%= safeLink(b.link,'/shop') %>"><%= b.text %></a>
+          <% } else { %>
+            <span><%= b.text %></span>
+          <% } %>
+        </span>
+      <% }) %>
+    <% } %>
+  </div>
+</div>
+<% } %>
+
+<nav id="customNavbar">
+  <!-- LOGO -->
+  <a href="/" style="display:flex; align-items:center; flex-shrink:0;">
+    <img src="/images/logo/logo-sm.png" alt="Samadhan" style="height:30px; flex-shrink:0; border-radius:6px;">
+    <span class="nav-logo-text">SAMADHAN</span>
+  </a>
+
+  <!-- PC MENU -->
+  <ul id="customMobileMenu">
+    <li><a href="/">Home</a></li>
+    <li><a href="/shop">Shop</a></li>
+    <li><a href="/blog">Blog</a></li>
+    <li><a href="/quiz">Quiz</a></li>
+    <li><a href="/about">About</a></li>
+    <li><a href="/contact">Contact</a></li>
+  </ul>
+
+  <!-- RIGHT ICONS -->
+  <div style="display:flex; align-items:center; gap:12px; margin-left:auto; flex-shrink:0;">
+    <!-- SEARCH BUTTON[cite: 3] -->
+    <button id="btnCustomSearch" aria-label="Search products" aria-expanded="false" aria-controls="customSearchBox" style="background:none; border:none; color:#fff; cursor:pointer;">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="22" height="22"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+    </button>
+
+    <!-- USER ICON (LOGIN/ACCOUNT)[cite: 1] -->
+    <% if (!currentUser) { %>
+      <a href="/auth/login" style="color:#fff;" title="Login">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="22" height="22"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      </a>
+    <% } else { %>
+      <a href="/account" style="color:#fff;" title="Account">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="22" height="22"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/><polyline points="16 11 18 13 22 9"/></svg>
+      </a>
+    <% } %>
+
+    <!-- CART BUTTON with Flipkart-style badge -->
+    <div class="nav-cart-wrap" id="navCartWrap">
+      <a href="/cart" style="color:#fff;" id="navCartLink" aria-label="Shopping cart">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="22" height="22"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+      </a>
+      <% if(typeof cartCount !== 'undefined' && cartCount > 0) { %>
+        <span class="nav-cart-badge" id="navCartBadge"><%= cartCount %></span>
+      <% } else { %>
+        <span class="nav-cart-badge" id="navCartBadge" style="display:none;">0</span>
+      <% } %>
+    </div>
+
+    <!-- Hamburger -->
+    <button id="btnCustomMenu" aria-label="Open menu" aria-expanded="false" aria-controls="customMobileMenu" class="custom-toggle">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+
+  <!-- SEARCH DROPDOWN[cite: 3] -->
+  <div id="customSearchBox">
+    <div style="padding:15px; background:#1e1e3f;">
+      <input type="text" id="myUniqueSearchInput" aria-label="Search products" maxlength="80" placeholder="Search for bracelets..." 
+        style="width:100%; padding:12px; border-radius:6px; border:1px solid rgba(255,255,255,0.2); background:#ffffff; color:#1a1a2e; outline:none; font-size:1rem; box-sizing:border-box; caret-color:#1a1a2e;">
+    </div>
+    <div id="customSearchResults" aria-live="polite"></div>
+  </div>
+</nav>
+
+<script src="/js/search.js?v=d4c22f74848e"></script>

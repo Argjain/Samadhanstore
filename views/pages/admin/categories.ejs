@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8">
+<!-- Favicon -->
+<link rel="icon" type="image/png" sizes="32x32" href="/images/logo/favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/images/logo/favicon-16.png">
+<link rel="shortcut icon" href="/images/logo/favicon.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/images/logo/apple-touch-icon.png"><meta name="viewport" content="width=device-width,initial-scale=1"><title><%= pageTitle %></title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Cormorant+Garamond:wght@300;400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/style.css?v=a4c169302152"></head>
+<body class="admin-body"><%- include('../../partials/admin-nav') %>
+<div class="admin-wrap">
+  <%if(success&&success.length){%><div class="alert alert-success">✓ <%=success[0]%></div><%}%>
+  <%if(error&&error.length){%><div class="alert alert-error" role="alert"><%=error[0]%></div><%}%>
+  <div style="display:grid;grid-template-columns:1fr 380px;gap:28px;align-items:start;">
+    <!-- LIST -->
+    <div>
+      <h2 style="font-family:'Cinzel',serif;color:var(--lavender-light);margin-bottom:18px;">Categories (<%= categories.length %>)</h2>
+      <div style="overflow-x:auto;">
+      <table class="admin-table">
+        <thead><tr><th>Icon</th><th>Name</th><th>Slug</th><th>Sort</th><th>Active</th><th>Actions</th></tr></thead>
+        <tbody>
+          <% categories.forEach(c=>{ %>
+          <tr>
+            <td style="font-size:1.5rem;"><%= c.icon %></td>
+            <td style="font-family:'Cinzel',serif;font-size:.9rem;"><%= c.name %></td>
+            <td style="color:var(--text-muted);font-size:.82rem;"><%= c.slug %></td>
+            <td style="color:var(--text-muted);"><%= c.sort_order %></td>
+            <td><%- c.is_active?'<span style="color:var(--success)">✅</span>':'<span style="color:var(--error)">❌</span>' %></td>
+            <td>
+              <div style="display:flex;gap:6px;">
+                <button onclick="editCat(<%= JSON.stringify(c) %>)" class="btn-outline btn-sm">Edit</button>
+                <form method="POST" action="/admin/categories/<%= c.id %>?_method=DELETE" onsubmit="return confirm('Delete?')">
+                  <button type="submit" class="btn-danger btn-sm">Del</button>
+                </form>
+              </div>
+            </td>
+          </tr>
+          <% }) %>
+        </tbody>
+      </table>
+      </div>
+    </div>
+    <!-- ADD/EDIT FORM -->
+    <div class="form-section">
+      <h3 id="catFormTitle">Add New Category</h3>
+      <form method="POST" id="catForm" action="/admin/categories">
+        <input type="hidden" name="_method" id="catMethod" value="">
+        <div class="form-group"><label>Category Name *</label><input type="text" name="name" id="catName" required placeholder="e.g. Crystal Bracelets"></div>
+        <div class="form-group"><label>Icon (emoji)</label><input type="text" name="icon" id="catIcon" value="💎" placeholder="💎"></div>
+        <div class="form-group"><label>Description</label><textarea name="description" id="catDesc" rows="2" placeholder="Short description..."></textarea></div>
+        <div class="form-group"><label>Sort Order (0 = pehle)</label><input type="number" name="sort_order" id="catSort" value="0" min="0"></div>
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px;">
+          <input type="checkbox" name="is_active" id="catActive" checked value="on">
+          <label for="catActive" style="font-size:1rem;text-transform:none;letter-spacing:0;color:var(--text);cursor:pointer;">Active</label>
+        </div>
+        <div style="display:flex;gap:10px;">
+          <button type="submit" class="btn-primary" style="flex:1;" id="catSubmitBtn">Add Category</button>
+          <button type="button" onclick="resetCatForm()" class="btn-outline">Reset</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+<script src="/js/main.js?v=2e61b06716d2"></script>
+<script>
+function editCat(c){
+  document.getElementById('catFormTitle').textContent='Edit Category';
+  document.getElementById('catForm').action='/admin/categories/'+c.id+'?_method=PUT';
+  document.getElementById('catMethod').value='PUT';
+  document.getElementById('catName').value=c.name;
+  document.getElementById('catIcon').value=c.icon;
+  document.getElementById('catDesc').value=c.description||'';
+  document.getElementById('catSort').value=c.sort_order;
+  document.getElementById('catActive').checked=!!c.is_active;
+  document.getElementById('catSubmitBtn').textContent='Update Category';
+  document.getElementById('catForm').scrollIntoView({behavior:'smooth'});
+}
+function resetCatForm(){
+  document.getElementById('catFormTitle').textContent='Add New Category';
+  document.getElementById('catForm').action='/admin/categories';
+  document.getElementById('catMethod').value='';
+  document.getElementById('catForm').reset();
+  document.getElementById('catSubmitBtn').textContent='Add Category';
+}
+</script>
+</body></html>

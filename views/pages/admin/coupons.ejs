@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8">
+<!-- Favicon -->
+<link rel="icon" type="image/png" sizes="32x32" href="/images/logo/favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/images/logo/favicon-16.png">
+<link rel="shortcut icon" href="/images/logo/favicon.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/images/logo/apple-touch-icon.png"><meta name="viewport" content="width=device-width,initial-scale=1"><title><%= pageTitle %></title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Cormorant+Garamond:wght@300;400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/style.css?v=a4c169302152"></head>
+<body class="admin-body"><%- include('../../partials/admin-nav') %>
+<div class="admin-wrap">
+  <%if(success&&success.length){%><div class="alert alert-success">✓ <%=success[0]%></div><%}%>
+  <%if(error&&error.length){%><div class="alert alert-error">⚠ <%=error[0]%></div><%}%>
+  <div style="display:grid;grid-template-columns:1fr 360px;gap:28px;align-items:start;">
+    <div>
+      <h2 style="font-family:'Cinzel',serif;color:var(--lavender-light);margin-bottom:18px;">Coupons (<%= coupons.length %>)</h2>
+      <div style="overflow-x:auto;">
+      <table class="admin-table">
+        <thead><tr><th>Code</th><th>Type</th><th>Value</th><th>Min Order</th><th>Used</th><th>Expiry</th><th>Status</th><th>Actions</th></tr></thead>
+        <tbody>
+          <% coupons.forEach(c=>{ %>
+          <tr>
+            <td style="font-family:'Cinzel',serif;color:var(--lavender-light);font-size:.88rem;"><%= c.code %></td>
+            <td><span style="font-size:.7rem;padding:3px 10px;border-radius:12px;background:rgba(139,127,212,.15);color:var(--lavender);border:1px solid var(--border);"><%= c.type==='percent'?'%':'₹' %></span></td>
+            <td style="color:var(--text);"><%= c.type==='percent'?c.value+'%':'₹'+c.value %></td>
+            <td style="color:var(--text-muted);"><%= c.min_order>0?'₹'+c.min_order:'Any' %></td>
+            <td style="color:var(--text-muted);"><%= c.used_count %>/<%= c.max_uses %></td>
+            <td style="color:var(--text-muted);font-size:.82rem;"><%= c.expires_at?new Date(c.expires_at).toLocaleDateString('en-IN'):'No expiry' %></td>
+            <td>
+              <form method="POST" action="/admin/coupons/<%= c.id %>/toggle">
+                <button type="submit" style="background:<%= c.is_active?'rgba(76,175,125,.15)':'rgba(224,82,82,.15)' %>;color:<%= c.is_active?'#4caf7d':'#e05252' %>;border:1px solid <%= c.is_active?'rgba(76,175,125,.3)':'rgba(224,82,82,.3)' %>;font-family:'Cinzel',serif;font-size:.68rem;padding:3px 12px;border-radius:12px;cursor:pointer;">
+                  <%= c.is_active?'Active':'Inactive' %>
+                </button>
+              </form>
+            </td>
+            <td>
+              <form method="POST" action="/admin/coupons/<%= c.id %>?_method=DELETE" onsubmit="return confirm('Delete?')">
+                <button type="submit" class="btn-danger btn-sm">Delete</button>
+              </form>
+            </td>
+          </tr>
+          <% }) %>
+        </tbody>
+      </table>
+      </div>
+    </div>
+    <div class="form-section">
+      <h3>Add New Coupon</h3>
+      <form method="POST" action="/admin/coupons">
+        <div class="form-group"><label>Coupon Code *</label><input type="text" name="code" required placeholder="DIWALI20" style="text-transform:uppercase;"></div>
+        <div class="form-group"><label>Type *</label>
+          <select name="type" required>
+            <option value="percent">Percentage (e.g. 10%)</option>
+            <option value="fixed">Fixed Amount (e.g. ₹50)</option>
+          </select>
+        </div>
+        <div class="form-group"><label>Value *</label><input type="number" name="value" required min="1" placeholder="10 ya 50"></div>
+        <div class="form-group"><label>Minimum Order (₹)</label><input type="number" name="min_order" value="0" min="0"></div>
+        <div class="form-group"><label>Max Uses</label><input type="number" name="max_uses" value="100" min="1"></div>
+        <div class="form-group"><label>Expiry Date</label><input type="date" name="expires_at"></div>
+        <button type="submit" class="btn-primary" style="width:100%;">Create Coupon</button>
+      </form>
+    </div>
+  </div>
+</div>
+<script src="/js/main.js?v=2e61b06716d2"></script></body></html>

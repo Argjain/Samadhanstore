@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <%- include('../partials/head') %>
+        <title>
+            <%= pageTitle %>
+        </title>
+
+        <style>
+            /* 1. Base (Mobile) Spacing */
+            .hero {
+                padding-top: 80px !important;
+                padding-bottom: 20px !important;
+                min-height: auto !important;
+            }
+
+            .section {
+                padding-top: 20px !important;
+                padding-bottom: 32px !important;
+            }
+
+            /* Best Selling — ek line mein */
+            .section-title h2 {
+                font-size: 1.15rem !important;
+                white-space: nowrap !important;
+                letter-spacing: 0.05em !important;
+            }
+            .section-title p {
+                font-size: 0.88rem !important;
+                margin-top: 6px !important;
+            }
+            .section-title { margin-bottom: 16px !important; }
+
+            /* 2. TABLET+ VIEW */
+            @media (min-width: 768px) {
+                .hero {
+                    padding-top: 120px !important;
+                    padding-bottom: 40px !important;
+                }
+
+                .hero-content h1 {
+                    font-size: 3rem !important;
+                    line-height: 1.15 !important;
+                }
+
+                .section {
+                    padding-top: 20px !important;
+                    margin-top: 0 !important;
+                }
+
+                .section-title {
+                    margin-bottom: 24px !important;
+                }
+
+                .section-title h2 {
+                    font-size: clamp(1.6rem, 3vw, 2.2rem) !important;
+                    white-space: normal !important;
+                }
+            }
+
+            /* 3. Product Carousel for Best Sellers */
+            .home-product-carousel {
+                display: flex;
+                gap: 20px;
+                overflow-x: auto;
+                scroll-snap-type: x mandatory;
+                padding-bottom: 20px;
+                -webkit-overflow-scrolling: touch;
+                scrollbar-width: none;
+                /* Firefox */
+            }
+
+            .home-product-carousel::-webkit-scrollbar {
+                display: none;
+                /* Chrome/Safari */
+            }
+
+            .home-product-carousel>* {
+                flex: 0 0 80%;
+                /* 80% screen width on mobile */
+                scroll-snap-align: center;
+                max-width: 300px;
+            }
+
+            @media (min-width: 600px) {
+                .home-product-carousel>* {
+                    flex: 0 0 45%;
+                }
+            }
+
+            @media (min-width: 1024px) {
+                .home-product-carousel>* {
+                    flex: 0 0 calc(25% - 15px);
+                    max-width: none;
+                }
+            }
+
+            /* 4. Category Row Mobile Refinements */
+            .mobile-cat-row {
+                display: flex;
+                gap: 15px;
+                justify-content: center;
+                flex-wrap: wrap;
+            }
+
+            @media (max-width: 768px) {
+                .mobile-cat-row {
+                    flex-wrap: nowrap;
+                    overflow-x: auto;
+                    justify-content: flex-start;
+                    padding-bottom: 15px;
+                    scroll-snap-type: x mandatory;
+                    scrollbar-width: none;
+                }
+
+                .mobile-cat-row::-webkit-scrollbar {
+                    display: none;
+                }
+
+                .mobile-cat-row>* {
+                    flex: 0 0 110px;
+                    /* Fixed width for category chips */
+                    scroll-snap-align: center;
+                }
+            }
+
+            /* 5. Hero Banner Heights */
+            .hero-banner-img {
+                width: 100%;
+                height: 200px;
+                object-fit: cover;
+                object-position: center;
+                display: block;
+            }
+
+            @media (min-width: 768px) {
+                .hero-banner-img {
+                    height: 300px;
+                }
+            }
+        </style>
+</head>
+
+<body class="home-page">
+    <div class="particles" id="particles"></div>
+    <%- include('../partials/navbar') %>
+
+        <!-- 1. HERO SECTION -->
+        <% const imageBanners=(typeof banners !=='undefined' ? banners : []).filter(b=> b.image); %>
+            <% if(imageBanners.length> 0) { %>
+                <section class="hero-banner-slider" style="position:relative; width:100%; overflow:hidden;">
+                    <div class="hero-slider-track"
+                        style="display:flex; transition: transform 0.5s ease-in-out; width:100%;">
+                        <% imageBanners.forEach((b, i)=> { %>
+                            <a href="<%= safeLink(b.link,'/shop') %>" style="flex: 0 0 100%; display:block; position:relative;">
+                                <img src="<%= imageUrl(b.image,1200) %>" srcset="<%= imageUrl(b.image,768) %> 768w, <%= imageUrl(b.image,1600) %> 1600w" sizes="100vw" class="hero-banner-img" alt="Offer"
+                                    width="1200" height="300"
+                                    loading="<%= i===0?'eager':'lazy' %>" fetchpriority="<%= i===0?'high':'low' %>" decoding="async">
+                            </a>
+                            <% }) %>
+                    </div>
+                </section>
+                <% } else { %>
+                    <section class="hero">
+                        <div class="hero-content">
+                            <h1>Wear Your<br><span>Universe</span></h1>
+                            <p>
+                                <%= S && S.site_tagline || 'Authentic Spiritual Bracelets' %>
+                            </p>
+                            <form class="hero-search" action="/shop" method="GET">
+                                <input type="text" name="search" placeholder="Search for your bracelet...">
+                                <button type="submit" class="btn-primary">Search</button>
+                            </form>
+                        </div>
+                    </section>
+                    <% } %>
+
+                        <!-- 2. BEST SELLERS -->
+                        <section class="section" style="padding-top:16px !important; padding-bottom:8px !important;">
+                            <div class="section-inner">
+                                <div class="section-title reveal">
+                                    <h2>Best Selling Bracelets</h2>
+                                    <p>Our most loved products</p>
+                                </div>
+                                <div class="home-product-carousel">
+                                    <% bestsellers.forEach((product, i)=> { %>
+                                        <%- include('../partials/product-card', {product, delay: i}) %>
+                                            <% }) %>
+                                </div>
+                            </div>
+                        </section>
+
+<!-- COMBO DEALS / BUNDLE & SAVE -->
+<% const activeCombos = (typeof comboDeals !== 'undefined' ? comboDeals : []).filter(d => d.products && d.products.length > 0); %>
+<% if (activeCombos.length > 0) { %>
+<section class="section combo-section reveal" style="padding-top:16px !important; padding-bottom:8px !important;">
+    <div class="section-inner">
+        <div class="section-title reveal">
+            <h2>Combo Deals</h2>
+            <p>Bundle & save more</p>
+        </div>
+        <div class="combo-grid">
+            <% activeCombos.forEach(deal => { %>
+                <% 
+                   const origTotal = deal.products.reduce((s,p)=> s + Number(p.price||0), 0);
+                   const save = Math.max(0, origTotal - Number(deal.combo_price||0));
+                %>
+                <div class="combo-card">
+                    <div class="combo-imgs <%= deal.image ? 'combo-imgs-single' : '' %>">
+                        <% if (deal.image) { %>
+                            <div class="combo-thumb combo-thumb-main">
+                                <img src="<%= imageUrl(deal.image,480) %>" alt="<%= deal.title %>" loading="lazy"
+                                    onerror="this.style.display='none';this.parentElement.innerHTML='🪬'">
+                            </div>
+                        <% } else { %>
+                            <% deal.products.slice(0,4).forEach(p => { %>
+                                <div class="combo-thumb">
+                                    <% const cimg = (p.images && p.images[0]) ? p.images[0] : ''; %>
+                                    <% if (cimg) { %>
+                                        <img src="<%= imageUrl(cimg,480) %>" alt="<%= p.name %>" loading="lazy"
+                                            onerror="this.style.display='none';this.parentElement.innerHTML='🪬'">
+                                    <% } else { %>🪬<% } %>
+                                </div>
+                            <% }) %>
+                        <% } %>
+                    </div>
+                    <div class="combo-info">
+                        <h3><%= deal.title %></h3>
+                        <% if (deal.description) { %><p class="combo-desc"><%= deal.description %></p><% } %>
+                        <div class="combo-items-line"><%= deal.products.map(p => p.name).join(' + ') %></div>
+                        <div class="combo-price-row">
+                            <span class="combo-price"><%= business.currencySymbol %><%= Number(deal.combo_price).toLocaleString('en-IN') %></span>
+                            <% if (save > 0) { %>
+                                <span class="combo-original"><%= business.currencySymbol %><%= Number(origTotal).toLocaleString('en-IN') %></span>
+                                <span class="combo-save">Save <%= business.currencySymbol %><%= Number(save).toLocaleString('en-IN') %></span>
+                            <% } %>
+                        </div>
+                        <button class="btn-add-combo" data-combo-id="<%= deal.id %>">Add Combo to Cart</button>
+                    </div>
+                </div>
+            <% }) %>
+        </div>
+    </div>
+</section>
+<% } %>
+<section class="astro-section reveal">
+    <div class="astro-section-title">Shop by Planet</div>
+    <div class="astro-scroll-wrap">
+        <% const planets = [
+            { name: 'Sun (सूर्य)', icon: '☀️', slug: 'sun' },
+            { name: 'Moon (चंद्र)', icon: '🌙', slug: 'moon' },
+            { name: 'Mars (मंगल)', icon: '🔴', slug: 'mars' },
+            { name: 'Mercury (बुध)', icon: '🟢', slug: 'mercury' },
+            { name: 'Jupiter (बृहस्पति)', icon: '🟡', slug: 'jupiter' },
+            { name: 'Venus (शुक्र)', icon: '💎', slug: 'venus' },
+            { name: 'Saturn (शनि)', icon: '🪐', slug: 'saturn' },
+            { name: 'Rahu (राहु)', icon: '🌑', slug: 'rahu' },
+            { name: 'Ketu (केतु)', icon: '☄️', slug: 'ketu' }
+        ]; %>
+        <% planets.forEach(p => { %>
+        <a href="/shop?planet=<%= p.slug %>" class="astro-item">
+            <div class="astro-icon"><%= p.icon %></div>
+            <div class="astro-label"><%= p.name %></div>
+        </a>
+        <% }) %>
+    </div>
+</section>
+
+<!-- SHOP BY MULANK -->
+<section class="astro-section reveal">
+    <div class="astro-section-title">Shop by Mulank</div>
+    <div class="astro-scroll-wrap">
+        <% const mulanks = [
+            { name: 'Mulank 1', slug: '1' },
+            { name: 'Mulank 2', slug: '2' },
+            { name: 'Mulank 3', slug: '3' },
+            { name: 'Mulank 4', slug: '4' },
+            { name: 'Mulank 5', slug: '5' },
+            { name: 'Mulank 6', slug: '6' },
+            { name: 'Mulank 7', slug: '7' },
+            { name: 'Mulank 8', slug: '8' },
+            { name: 'Mulank 9', slug: '9' }
+        ]; %>
+        <% mulanks.forEach(m => { %>
+        <a href="/shop?mulank=<%= m.slug %>" class="astro-item">
+            <div class="astro-icon" style="font-family:'Cinzel',serif;font-weight:700;color:var(--indigo);"><%= m.slug %></div>
+            <div class="astro-label"><%= m.name %></div>
+        </a>
+        <% }) %>
+    </div>
+</section>
+
+<!-- SHOP BY ZODIAC SIGN -->
+<section class="astro-section reveal">
+    <div class="astro-section-title">Shop by Zodiac Sign</div>
+    <div class="astro-scroll-wrap">
+        <% const zodiacs = [
+            { name: 'Aries (मेष)', icon: '♈', slug: 'aries' },
+            { name: 'Taurus (वृषभ)', icon: '♉', slug: 'taurus' },
+            { name: 'Gemini (मिथुन)', icon: '♊', slug: 'gemini' },
+            { name: 'Cancer (कर्क)', icon: '♋', slug: 'cancer' },
+            { name: 'Leo (सिंह)', icon: '♌', slug: 'leo' },
+            { name: 'Virgo (कन्या)', icon: '♍', slug: 'virgo' },
+            { name: 'Libra (तुला)', icon: '♎', slug: 'libra' },
+            { name: 'Scorpio (वृश्चिक)', icon: '♏', slug: 'scorpio' },
+            { name: 'Sagittarius (धनु)', icon: '♐', slug: 'sagittarius' },
+            { name: 'Capricorn (मकर)', icon: '♑', slug: 'capricorn' },
+            { name: 'Aquarius (कुंभ)', icon: '♒', slug: 'aquarius' },
+            { name: 'Pisces (मीन)', icon: '♓', slug: 'pisces' }
+        ]; %>
+        <% zodiacs.forEach(z => { %>
+        <a href="/shop?zodiac=<%= z.slug %>" class="astro-item">
+            <div class="astro-icon" style="color:var(--indigo)"><%= z.icon %></div>
+            <div class="astro-label"><%= z.name %></div>
+        </a>
+        <% }) %>
+    </div>
+</section>
+                        <!-- 3. SHOP BY CATEGORY -->
+                        <div class="categories-wrap reveal" style="background: var(--beige-dark); padding: 24px 16px 28px;">
+                            <div class="section-inner" style="width:100%;">
+                            <div
+                                style="text-align:center; font-family:'Cinzel',serif; color:var(--indigo); margin-bottom:20px; font-size:clamp(1.25rem,3.5vw,1.7rem);">
+                                Shop by Category</div>
+                            <div class="mobile-cat-row">
+                                <% categories.forEach(cat=> { %>
+                                    <a href="/shop?category=<%= cat.slug %>" class="cat-chip">
+                                        <div class="cat-icon" style="font-size:1.3rem;">
+                                            <%= cat.slug === 'rudraksha' ? '☸️' : cat.icon %>
+                                        </div>
+                                        <div class="cat-label" style="font-size:0.55rem;">
+                                            <%= cat.name %>
+                                        </div>
+                                    </a>
+                                    <% }) %>
+                            </div>
+                            </div>
+                        </div>
+
+                        <!-- 4. ALL PRODUCTS -->
+                        <section class="section" style="padding-top:16px !important;">
+                            <div class="section-inner">
+                                <div class="section-title reveal">
+                                    <h2>Our Full Collection</h2>
+                                    <p>Explore all handcrafted bracelets</p>
+                                </div>
+                                <div class="products-grid" id="homeProductsGrid">
+                                    <% if(typeof allProducts !=='undefined' ) { %>
+                                        <% allProducts.forEach((product, i)=> { %>
+                                            <%- include('../partials/product-card', {product, delay: i}) %>
+                                                <% }) %>
+                                                    <% } %>
+                                </div>
+                                <div style="text-align:center; margin-top:40px;">
+                                    <button id="loadMoreBtn" class="btn-outline" style="cursor:pointer;">Load More Products ↓</button>
+                                    <a href="/shop" class="btn-outline" style="margin-left:12px;">View All Collection →</a>
+                                </div>
+                            </div>
+                        </section>
+
+                        <%- include('../partials/footer') %>
+
+                            <script>
+                                document.addEventListener('DOMContentLoaded', () => {
+                                    const carousel = document.querySelector('.home-product-carousel');
+                                    if (carousel && carousel.children.length > 0) {
+                                        let slideTimer;
+
+                                        function autoSlide() {
+                                            const firstChild = carousel.firstElementChild;
+                                            const itemWidth = firstChild.offsetWidth + 20; // width + gap
+
+                                            // Agar end pe pahunch gaye, to shuru se start karo
+                                            if (carousel.scrollLeft + carousel.clientWidth >= carousel.scrollWidth - 10) {
+                                                carousel.scrollTo({ left: 0, behavior: 'smooth' });
+                                            } else {
+                                                carousel.scrollBy({ left: itemWidth, behavior: 'smooth' });
+                                            }
+                                        }
+
+                                        // 3 second (3000ms) me auto slide
+                                        slideTimer = setInterval(autoSlide, 3000);
+
+                                        // Jab user hover ya touch kare, to auto-slide ruk jaye
+                                        carousel.addEventListener('mouseenter', () => clearInterval(slideTimer));
+                                        carousel.addEventListener('mouseleave', () => slideTimer = setInterval(autoSlide, 3000));
+
+                                        carousel.addEventListener('touchstart', () => clearInterval(slideTimer), { passive: true });
+                                        carousel.addEventListener('touchend', () => {
+                                            clearInterval(slideTimer);
+                                            slideTimer = setInterval(autoSlide, 3000);
+                                        }, { passive: true });
+                                    }
+
+                                    // Hero Banner Slider Logic
+                                    const heroTrack = document.querySelector('.hero-slider-track');
+                                    if (heroTrack && heroTrack.children.length > 1) {
+                                        let currentSlide = 0;
+                                        setInterval(() => {
+                                            currentSlide = (currentSlide + 1) % heroTrack.children.length;
+                                            heroTrack.style.transform = `translateX(-${currentSlide * 100}%)`;
+                                        }, 4000); // Change banner every 4 seconds
+                                    }
+                                });
+                            </script>
+
+<script>
+// Load More Products
+(function(){
+  const grid = document.getElementById('homeProductsGrid');
+  const btn = document.getElementById('loadMoreBtn');
+  if(!grid || !btn) return;
+  let offset = 12; // Already loaded 12
+  const sym = '₹';
+
+  btn.addEventListener('click', async function(){
+    btn.disabled = true;
+    btn.textContent = 'Loading...';
+    try {
+      const r = await fetch('/api/products?offset='+offset+'&limit=12');
+      if(!r.ok) throw new Error('Products unavailable');
+      const data = await r.json();
+      if(!data.products.length) { btn.textContent = 'No more products'; return; }
+
+      data.products.forEach(p => {
+        const rating=Math.min(5,Math.max(0,Math.round(Number(p.avg_rating)||0)));
+        p={...p,name:escapeHTML(p.name),badge:escapeHTML(p.badge),category_name:escapeHTML(p.category_name),slug:encodeURIComponent(p.slug),images:(p.images||[]).map(escapeHTML)};
+        const disc = p.original_price ? Math.round((1-p.price/p.original_price)*100) : 0;
+        const img = (p.images && p.images[0]) || '';
+        const card = document.createElement('div');
+        card.className = 'product-card reveal visible';
+        card.innerHTML = `
+          <a href="/product/${p.slug}">
+            <div class="product-imgs">
+              ${p.badge ? '<div class="product-badge">'+p.badge+'</div>' : ''}
+              ${img ? '<img src="'+img+'" alt="'+p.name+'" loading="lazy">' : '<div class="product-img-placeholder" style="display:flex">🪬</div>'}
+            </div>
+          </a>
+          <div class="product-info">
+            <div class="product-cat">${p.category_name||''}</div>
+            <h3><a href="/product/${p.slug}">${p.name}</a></h3>
+            ${p.avg_rating > 0 ? '<div class="stars-row"><span class="stars">'+'★'.repeat(rating)+'☆'.repeat(5-rating)+'</span><span class="review-count">('+p.review_count+')</span></div>' : ''}
+            ${p.combo_qty && p.combo_price ? '<div class="combo-badge">Buy '+Number(p.combo_qty)+'+ at '+sym+Number(p.combo_price)+' each'+'</div>' : ''}
+            <div class="price-container">
+              <span class="price">${sym}${Number(p.price).toLocaleString('en-IN')}</span>
+              ${p.original_price ? '<span class="price-original">'+sym+Number(p.original_price).toLocaleString('en-IN')+'</span><span class="price-discount">'+disc+'% OFF</span>' : ''}
+            </div>
+            <button class="btn-add-cart" data-product-id="${Number(p.id)}" ${p.stock<1?'disabled':''}>${p.stock<1?'Out of Stock':'Add to Cart'}</button>
+          </div>`;
+        grid.appendChild(card);
+      });
+
+      offset += data.products.length;
+      if(!data.hasMore) { btn.textContent = 'All products loaded ✓'; btn.disabled = true; }
+      else { btn.disabled = false; btn.textContent = 'Load More Products ↓'; }
+
+      // Re-bind add-to-cart on new cards
+      grid.querySelectorAll('.btn-add-cart:not([data-bound])').forEach(b => {
+        b.setAttribute('data-bound','1');
+        b.addEventListener('click', async function(e){
+          e.preventDefault();
+          const pid=this.dataset.productId;
+          const orig=this.textContent;
+          this.disabled=true;
+          try{
+            const r=await fetch('/cart/add',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({productId:pid,qty:1})});
+            const d=await r.json();
+            if(d.success){
+              this.textContent='✓ Added!';this.classList.add('added');
+              if(window.showToast) showToast('✦ '+d.message);
+              const badge=document.getElementById('navCartBadge');
+              if(badge&&d.cartCount>0){badge.textContent=d.cartCount;badge.style.display='flex';}
+              setTimeout(()=>{this.textContent=orig;this.classList.remove('added');this.disabled=false;},2000);
+            }else this.disabled=false;
+          }catch(e){this.disabled=false;}
+        });
+      });
+    } catch(e) { btn.textContent = 'Load More Products ↓'; btn.disabled = false; }
+  });
+})();
+</script>
+</body>
+
+</html>

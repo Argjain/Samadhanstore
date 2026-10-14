@@ -1,0 +1,58 @@
+<%
+const disc = product.original_price ? Math.round((1-product.price/product.original_price)*100) : 0;
+const imgs  = (product.images || []).filter(Boolean);
+const img1  = imgs[0] || '';
+const isWished = (wishlistIds||[]).includes(product.id);
+%>
+<div class="product-card reveal" style="transition-delay:<%= (delay||0)*0.08 %>s">
+
+  <% if(currentUser) { %>
+  <button class="wishlist-btn <%= isWished?'active':'' %>" data-product-id="<%= product.id %>" title="Wishlist">
+    <%= isWished ? '❤️' : '🤍' %>
+  </button>
+  <% } %>
+
+  <a href="/product/<%= product.slug %>">
+    <div class="product-imgs">
+      <% if(product.badge) { %><div class="product-badge"><%= product.badge %></div><% } %>
+      <% if(img1) { %>
+        <div class="shimmer-bg"></div>
+        <img src="<%= imageUrl(img1,480) %>" srcset="<%= imageUrl(img1,320) %> 320w, <%= imageUrl(img1,480) %> 480w" sizes="(max-width:768px) 46vw, 25vw" width="480" height="480" alt="<%= product.name %>" loading="lazy" decoding="async"
+          data-fallbacks="<%= imgs.slice(1).map(img=>imageUrl(img,480)).join(',') %>"
+          onerror="var fb=this.dataset.fallbacks;if(fb){var arr=fb.split(',');this.dataset.fallbacks=arr.slice(1).join(',');this.src=arr[0];}else{this.style.display='none';this.nextElementSibling.style.display='flex';}">
+        <div class="product-img-placeholder" style="display:none;position:relative;z-index:2">🪬</div>
+      <% } else { %>
+        <div class="product-img-placeholder" style="display:flex;position:relative;z-index:2">🪬</div>
+      <% } %>
+      <% if(imgs.length > 1) { %>
+      <div class="img-dots">
+        <% imgs.slice(0,4).forEach((img,i) => { %>
+          <div class="img-dot <%= i===0?'active':'' %>"></div>
+        <% }) %>
+      </div>
+      <% } %>
+    </div>
+  </a>
+
+  <div class="product-info">
+    <div class="product-cat"><%= product.category_name || '' %></div>
+    <h3><a href="/product/<%= product.slug %>"><%= product.name %></a></h3>
+    <% if(product.avg_rating > 0) { %>
+    <div class="stars-row">
+      <span class="stars"><%= '★'.repeat(stars(Math.round(product.avg_rating))) %><%= '☆'.repeat(5-stars(Math.round(product.avg_rating))) %></span>
+      <span class="review-count">(<%= product.review_count || 0 %>)</span>
+    </div>
+    <% } %>
+    <% if(product.combo_qty && product.combo_price) { %>
+      <div class="combo-badge">Buy <%= product.combo_qty %>+ at ₹<%= product.combo_price %> each</div>
+    <% } %>
+    <div class="price-container">
+      <span class="price"><%= business.currencySymbol %><%= Number(product.price).toLocaleString('en-IN') %></span>
+      <% if(product.original_price) { %>
+        <span class="price-original"><%= business.currencySymbol %><%= Number(product.original_price).toLocaleString('en-IN') %></span>
+        <span class="price-discount"><%= disc %>% OFF</span>
+      <% } %>
+    </div>
+    <button class="btn-add-cart" data-product-id="<%= product.id %>" <%= product.stock<1?'disabled':'' %>><%= product.stock<1?'Out of Stock':'Add to Cart' %></button>
+  </div>
+</div>

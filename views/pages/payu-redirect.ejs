@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html><head><meta charset="UTF-8">
+<!-- Favicon -->
+<link rel="icon" type="image/png" sizes="32x32" href="/images/logo/favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/images/logo/favicon-16.png">
+<link rel="shortcut icon" href="/images/logo/favicon.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/images/logo/apple-touch-icon.png"><title>Redirecting to Payment...</title>
+<style>body{background:#0f0c1a;color:#e8e4f0;font-family:'Cinzel',serif;display:flex;align-items:center;justify-content:center;min-height:100vh;text-align:center;}
+.loader{width:50px;height:50px;border:3px solid rgba(139,127,212,.2);border-top-color:#8b7fd4;border-radius:50%;animation:spin 1s linear infinite;margin:0 auto 20px;}
+@keyframes spin{to{transform:rotate(360deg);}}</style></head>
+<body>
+<div><div class="loader"></div><h2 style="letter-spacing:.2em;margin-bottom:8px;">SAMADHAN</h2><p style="color:#8b7fd4;font-size:.85rem;letter-spacing:.15em;">Redirecting to secure payment...</p></div>
+<form id="payuForm" action="<%= payu.url %>" method="POST">
+  <input type="hidden" name="key" value="<%= payu.key %>">
+  <input type="hidden" name="txnid" value="<%= payu.txnId %>">
+  <input type="hidden" name="amount" value="<%= payu.amount %>">
+  <input type="hidden" name="productinfo" value="<%= payu.productInfo %>">
+  <input type="hidden" name="firstname" value="<%= payu.name %>">
+  <input type="hidden" name="email" value="<%= payu.email %>">
+  <input type="hidden" name="phone" value="<%= payu.phone %>">
+  <input type="hidden" name="surl" value="<%= payu.surl %>">
+  <input type="hidden" name="furl" value="<%= payu.furl %>">
+  <input type="hidden" name="hash" value="<%= payu.hash %>">
+</form>
+<script>setTimeout(()=>document.getElementById('payuForm').submit(),1500);</script>
+</body></html>

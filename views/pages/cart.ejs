@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/logo/favicon-32.png">
+  <link rel="shortcut icon" href="/images/logo/favicon.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/logo/apple-touch-icon.png">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title><%= pageTitle %></title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css?v=a4c169302152">
+  <style>
+  /* ── FLIPKART CART STYLES ── */
+  body { font-family: 'Roboto', sans-serif; }
+  .cart-top-bar {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 14px;
+  }
+  .cart-back-link {
+    font-size:0.85rem; font-weight:500;
+    color:var(--indigo); text-decoration:none; display:flex; align-items:center; gap:4px;
+  }
+  .cart-back-link:hover { text-decoration:underline; }
+  .cart-clear-btn {
+    font-size:0.8rem; font-weight:500;
+    color:var(--error); background:none; border:1px solid var(--error);
+    padding:5px 12px; border-radius:4px; cursor:pointer; transition:all 0.2s;
+  }
+  .cart-clear-btn:hover { background:rgba(192,57,43,0.08); }
+
+  /* Item cards */
+  .cart-items-wrap {
+    background:white; border:1.5px solid var(--border);
+    border-radius:var(--radius); overflow:hidden;
+    margin-bottom:16px; box-shadow:var(--shadow);
+  }
+  .cart-item-card {
+    display:flex; gap:12px; padding:14px 16px;
+    border-bottom:1px solid var(--beige-darker); align-items:flex-start;
+    position:relative;
+  }
+  .cart-item-card:last-child { border-bottom:none; }
+  .cart-item-thumb {
+    width:80px; height:80px; object-fit:cover;
+    border-radius:6px; flex-shrink:0;
+    border:1px solid var(--border); background:var(--beige-dark);
+  }
+  .cart-item-body { flex:1; min-width:0; }
+  .cart-item-name {
+    font-size:0.95rem; color:var(--indigo);
+    font-weight:600; display:block; margin-bottom:3px; line-height:1.3;
+  }
+  .cart-item-sub { font-size:0.75rem; color:var(--text-muted); margin-bottom:6px; }
+  .cart-item-price {
+    font-size:1rem;
+    color:var(--indigo); font-weight:600; margin-bottom:10px;
+  }
+  .cart-item-controls { display:flex; align-items:center; gap:12px; flex-wrap:wrap; }
+
+  /* Qty Stepper */
+  .qty-stepper { display:flex; align-items:center; border:1.5px solid var(--border); border-radius:6px; overflow:hidden; }
+  .qty-stepper button {
+    background:var(--beige-dark); border:none; width:30px; height:30px;
+    font-size:1.1rem; cursor:pointer; color:var(--indigo);
+    display:flex; align-items:center; justify-content:center; transition:background 0.2s;
+  }
+  .qty-stepper button:hover { background:var(--beige-darker); }
+  .qty-num { padding:0 12px; font-weight:600; font-size:0.9rem; min-width:30px; text-align:center; }
+  
+  .cart-item-total { font-weight:700; font-size:1.1rem; color:var(--indigo); display:flex; align-items:center; padding-right:32px; }
+
+  /* Remove X button — top right corner (Flipkart style) */
+  .cart-remove-btn {
+    position:absolute; top:10px; right:12px;
+    width:26px; height:26px; border-radius:50%;
+    background:var(--beige-dark); border:1.5px solid var(--border);
+    color:var(--text-muted); font-size:0.75rem;
+    display:flex; align-items:center; justify-content:center;
+    cursor:pointer; transition:all 0.2s;
+  }
+  .cart-remove-btn:hover { background:var(--error); border-color:var(--error); color:#fff; }
+  
+  .summary-row.total { border-top:1.5px solid var(--border); margin-top:12px; padding-top:16px; font-size:1.3rem; font-weight:700; color:var(--indigo); }
+  </style>
+</head>
+<body data-loggedin="<%= currentUser?'true':'false' %>">
+  <div class="particles" id="particles"></div>
+  <%- include('../partials/navbar') %>
+  <div class="page-wrap">
+    <div class="breadcrumb"><a href="/">Home</a><span>›</span><span><%= typeof isBuyNow !== 'undefined' && isBuyNow ? 'Order Summary' : 'Cart' %></span></div>
+    <h1 style="font-size:1.8rem;color:var(--indigo);margin-bottom:20px;"><%= typeof isBuyNow !== 'undefined' && isBuyNow ? 'Order Summary' : 'Your Cart' %></h1>
+    <% if(error&&error.length){ %><div class="alert alert-error" role="alert"><%=error[0]%></div><% } %>
+
+    <% const ci=Object.values(cart); if(!ci.length) { %>
+      <div class="empty-state">
+        <div class="empty-icon">🛒</div>
+        <h3>Your Cart is Empty</h3>
+        <p style="color:var(--text-muted);margin:10px 0 24px;">You haven't added any products yet.</p>
+        <a href="/shop" class="btn-primary">Browse Products</a>
+      </div>
+    <% } else { %>
+      <div class="cart-layout">
+
+        <!-- LEFT: Items -->
+        <div>
+          <div class="cart-top-bar">
+            <a href="/shop" class="cart-back-link">← <%= typeof isBuyNow !== 'undefined' && isBuyNow ? 'Back to Shop' : 'Continue Shopping' %></a>
+            <% if (typeof isBuyNow === 'undefined' || !isBuyNow) { %>
+            <button id="btnClearCart" class="cart-clear-btn">🗑 Clear Cart</button>
+            <% } %>
+          </div>
+
+          <div class="cart-items-wrap">
+            <% ci.forEach(item => { %>
+            <div class="cart-item-card">
+              <img src="<%= item.image %>" alt="<%= item.name %>" class="cart-item-thumb"
+                onerror="this.src='/images/default-p.jpg'">
+              <div class="cart-item-body">
+                <a href="/product/<%= item.slug %>" class="cart-item-name"><%= item.name %></a>
+                <% if (item.combo_qty && item.qty >= item.combo_qty) { %>
+                  <div class="cart-item-sub" style="color:var(--success);font-weight:600;">Combo Applied: <%= business.currencySymbol %><%= item.combo_price %> each</div>
+                <% } %>
+                <div class="cart-item-price"><%= business.currencySymbol %><%= Number(item.unit_price).toLocaleString('en-IN') %></div>
+                <div class="cart-item-controls">
+                  <div class="qty-stepper">
+                    <button class="qty-dec" data-id="<%= item.id %>">−</button>
+                    <span class="qty-num" id="qty-<%= item.id %>"><%= item.qty %></span>
+                    <button class="qty-inc" data-id="<%= item.id %>">+</button>
+                  </div>
+                </div>
+              </div>
+              <div class="cart-item-total"><%= business.currencySymbol %><%= Number(item.line_total).toLocaleString('en-IN') %></div>
+              <!-- Remove: top-right X -->
+              <button class="cart-remove-btn" data-product-id="<%= item.id %>" title="Remove">✕</button>
+            </div>
+            <% }) %>
+          </div>
+        </div>
+
+        <!-- RIGHT: Order Summary -->
+        <div class="cart-summary reveal">
+          <h3>Order Summary</h3>
+          <div class="coupon-box">
+            <span class="coupon-label">Promo Code</span>
+            <% if(coupon) { %>
+              <div class="coupon-applied">
+                <span>✓ <%= coupon %> — ₹<%= discount %> OFF</span>
+                <button id="btnRemoveCoupon" style="background:none;border:none;color:var(--error);cursor:pointer;">✕</button>
+              </div>
+            <% } else { %>
+              <div class="coupon-input-row">
+                <input type="text" id="couponInput" placeholder="Enter code...">
+                <button id="btnApplyCoupon" class="btn-primary" style="padding:10px 14px;font-size:.7rem;">Apply</button>
+              </div>
+              <div id="couponMsg" style="font-size:.82rem;min-height:16px;margin-top:6px;"></div>
+              <div class="hint-codes">
+                <span style="font-size:.72rem;color:var(--text-muted);">Try:</span>
+                <% ['SAMADHAN10','WELCOME50','SPIRITUAL20'].forEach(c=>{%>
+                  <button class="hint-code hint-code-btn" data-code="<%= c %>"><%= c %></button>
+                <%})%>
+              </div>
+            <% } %>
+          </div>
+          <div style="border-top:1px solid var(--border);padding-top:14px;">
+            <div class="summary-row"><span>Subtotal</span><span><%= business.currencySymbol %><%= Number(subtotal).toLocaleString('en-IN') %></span></div>
+            <% if(discount>0){%><div class="summary-row discount"><span>Discount</span><span>−<%= business.currencySymbol %><%= discount %></span></div><%}%>
+            <% if(typeof comboDiscount !== 'undefined' && comboDiscount > 0){%><div class="summary-row discount"><span>Combo Saving</span><span style="color:var(--success)">−<%= business.currencySymbol %><%= comboDiscount %></span></div><%}%>
+            <div class="summary-row">
+              <span>Shipping</span>
+              <span>
+                <% if(shipping===0||String(shipping).includes('Free')||String(shipping).includes('span')){%>
+                  <span style="color:#28a745;font-weight:600;">Free</span>
+                <%}else{%><%= business.currencySymbol %><%= shipping %><%}%>
+              </span>
+            </div>
+            <% if(shipping>0){%><div style="font-size:.78rem;color:var(--text-muted);margin-bottom:6px;">₹<%= freeShippingAbove-subtotal %> more for free shipping</div><%}%>
+            <div class="summary-row total"><span>Total</span><span><%= business.currencySymbol %><%= Number(total).toLocaleString('en-IN') %></span></div>
+          </div>
+          <a href="/orders/checkout<%= typeof isBuyNow !== 'undefined' && isBuyNow ? '?buyNow=true' : '' %>" class="btn-primary" style="width:100%;margin-top:18px;display:flex;justify-content:center;">Proceed to Checkout →</a>
+          <div style="text-align:center;margin-top:10px;color:var(--text-muted);font-size:.78rem;">🔒 Secure | 💳 PayU | 💵 COD (Select Pincodes)</div>
+        </div>
+      </div>
+    <% } %>
+  </div>
+  <%- include('../partials/footer') %>
+
+  <script>
+  const IS_BUY_NOW = <%= typeof isBuyNow !== 'undefined' && isBuyNow ? 'true' : 'false' %>;
+  document.addEventListener('DOMContentLoaded', () => {
+    // Clear Cart
+    const btnClearCart = document.getElementById('btnClearCart');
+    if(btnClearCart) btnClearCart.addEventListener('click', ()=>{
+      if(confirm('Clear your entire cart?')) fetch(IS_BUY_NOW ? '/cart/buy-now-clear' : '/cart/clear',{method:'POST'}).then(()=>location.reload());
+    });
+
+    // Remove Coupon
+    const btnRemoveCoupon = document.getElementById('btnRemoveCoupon');
+    if(btnRemoveCoupon) btnRemoveCoupon.addEventListener('click', ()=>{
+      const url = IS_BUY_NOW ? '/cart/buy-now-remove-coupon' : '/cart/remove-coupon';
+      fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},body:'{}'}).then(()=>location.reload());
+    });
+
+    // Apply Coupon
+    function applyCoupon(){
+      const code=document.getElementById('couponInput').value.trim();
+      const msg=document.getElementById('couponMsg');
+      if(!code){msg.style.color='var(--error)';msg.textContent='Please enter a code.';return;}
+      const url = IS_BUY_NOW ? '/cart/buy-now-apply-coupon' : '/cart/apply-coupon';
+      fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({code})})
+        .then(r=>r.json()).then(d=>{
+          if(d.success){showToast('🎉 '+d.message);location.reload();}
+          else{msg.style.color='var(--error)';msg.textContent=d.message;}
+        });
+    }
+    const btnApplyCoupon=document.getElementById('btnApplyCoupon');
+    if(btnApplyCoupon) btnApplyCoupon.addEventListener('click',applyCoupon);
+    const couponInput=document.getElementById('couponInput');
+    if(couponInput) couponInput.addEventListener('keypress',e=>{if(e.key==='Enter')applyCoupon();});
+    document.querySelectorAll('.hint-code-btn').forEach(btn=>{
+      btn.addEventListener('click',function(){if(couponInput)couponInput.value=this.getAttribute('data-code');});
+    });
+
+    // Remove item
+    document.querySelectorAll('.cart-remove-btn').forEach(btn=>{
+      btn.addEventListener('click',async function(){
+        const url = IS_BUY_NOW ? '/cart/buy-now-remove' : '/cart/remove';
+        const r=await fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({productId:this.dataset.productId})});
+        const d=await r.json();if(d.success)location.reload();
+      });
+    });
+
+    // Qty Stepper
+    async function updateQty(id,qty){
+      if(qty<1){
+        const url = IS_BUY_NOW ? '/cart/buy-now-remove' : '/cart/remove';
+        const r=await fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({productId:id})});
+        const d=await r.json();if(d.success)location.reload();
+        return;
+      }
+      if(qty>10) return;
+      const url = IS_BUY_NOW ? '/cart/buy-now-update' : '/cart/update';
+      const r=await fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({productId:id,qty})});
+      const d=await r.json();if(d.success)location.reload();
+    }
+    document.querySelectorAll('.qty-dec').forEach(btn=>{
+      btn.addEventListener('click',function(){
+        const id=this.dataset.id;
+        const cur=parseInt(document.getElementById('qty-'+id).textContent);
+        updateQty(id,cur-1);
+      });
+    });
+    document.querySelectorAll('.qty-inc').forEach(btn=>{
+      btn.addEventListener('click',function(){
+        const id=this.dataset.id;
+        const cur=parseInt(document.getElementById('qty-'+id).textContent);
+        updateQty(id,cur+1);
+      });
+    });
+  });
+  </script>
+</body>
+</html>

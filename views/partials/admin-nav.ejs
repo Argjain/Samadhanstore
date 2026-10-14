@@ -1,0 +1,127 @@
+<style>
+/* ── ADMIN NAV MOBILE FIRST ── */
+.admin-nav {
+  position: sticky;
+  top: 0;
+  z-index: 9999;
+  background: #1a1040;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 14px;
+  height: 56px;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+
+.admin-logo {
+  display: flex; align-items: center; gap: 8px;
+  text-decoration: none; color: #fff;
+  font-family: 'Cinzel', serif; font-size: 0.88rem; font-weight: 700;
+  letter-spacing: 0.06em; flex-shrink: 0;
+}
+
+/* Mobile hamburger */
+.admin-ham {
+  display: flex; flex-direction: column; gap: 5px;
+  background: none; border: none; cursor: pointer; padding: 6px;
+}
+.admin-ham span { display: block; width: 22px; height: 2px; background: #fff; border-radius: 2px; transition: all 0.3s; }
+
+/* Mobile dropdown menu */
+.admin-menu {
+  display: none;
+  position: fixed;
+  top: 56px; left: 0; right: 0;
+  background: #1a1040;
+  border-bottom: 2px solid rgba(255,255,255,0.1);
+  padding: 12px 16px 16px;
+  z-index: 9998;
+  flex-direction: column;
+  gap: 6px;
+  max-height: calc(100vh - 56px);
+  overflow-y: auto;
+}
+.admin-menu.open { display: flex; }
+
+.admin-menu a {
+  display: block;
+  padding: 10px 14px;
+  border-radius: 6px;
+  font-family: 'Cinzel', serif;
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.85);
+  text-decoration: none;
+  border: 1px solid rgba(255,255,255,0.08);
+  transition: all 0.2s;
+}
+.admin-menu a:hover { background: rgba(255,255,255,0.1); color: #fff; }
+.admin-menu a.danger { color: #ff6b6b; border-color: rgba(255,107,107,0.3); }
+.admin-menu a.danger:hover { background: rgba(255,107,107,0.12); }
+
+/* Desktop: horizontal nav */
+@media (min-width: 768px) {
+  .admin-ham { display: none; }
+  .admin-menu {
+    display: flex !important;
+    position: static;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 6px;
+    padding: 0;
+    border: none;
+    background: transparent;
+    max-height: none;
+    overflow: visible;
+  }
+  .admin-menu a {
+    padding: 5px 10px;
+    font-size: 0.62rem;
+  }
+}
+</style>
+
+<nav class="admin-nav">
+  <a href="/admin" class="admin-logo">
+    <img src="/images/logo/logo.png" alt="" style="height:28px; border-radius:6px;" onerror="this.style.display='none'">
+    <span>SAMADHAN ADMIN</span>
+  </a>
+
+  <!-- Hamburger (mobile only) -->
+  <button class="admin-ham" id="adminHam" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
+
+  <!-- Nav Links -->
+  <div class="admin-menu" id="adminMenu">
+    <a href="/admin/products">📦 Products</a>
+    <a href="/admin/queries">💬 Queries</a>
+    <a href="/admin/categories">🏷 Categories</a>
+    <a href="/admin/payment-checkouts">Payments</a>
+    <a href="/admin/orders">🚚 Orders</a>
+    <a href="/admin/coupons">🎟 Coupons</a>
+    <a href="/admin/banners">🖼 Banners</a>
+    <a href="/admin/offers">🎉 Offers</a>
+    <a href="/admin/combos">🔗 Combos</a>
+    <a href="/admin/blogs">📝 Blog</a>
+    <a href="/admin/reviews">⭐ Reviews</a>
+    <a href="/admin/users">👥 Users</a>
+    <a href="/admin/settings">⚙️ Settings</a>
+    <a href="/" target="_blank">🌐 Site ↗</a>
+    <a href="/auth/logout" class="danger">🚪 Logout</a>
+  </div>
+</nav>
+
+<script>
+(function(){
+  const ham = document.getElementById('adminHam');
+  const menu = document.getElementById('adminMenu');
+  if(ham && menu){
+    ham.addEventListener('click', () => menu.classList.toggle('open'));
+    document.addEventListener('click', e => {
+      if(!ham.contains(e.target) && !menu.contains(e.target)) menu.classList.remove('open');
+    });
+  }
+})();
+</script>
